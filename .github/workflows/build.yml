@@ -3,7 +3,10 @@ name: Build index.html
 on:
   push:
     branches:
-      - master   # ← 这里改成 master
+      - master
+
+permissions:
+  contents: write   # 允许 Actions 写代码
 
 jobs:
   build:
@@ -25,6 +28,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add index.html
-          git commit -m "Auto update index.html" || echo "No changes"
+          git commit -m "Auto update index.html [skip ci]" || echo "No changes"
           git push
-
