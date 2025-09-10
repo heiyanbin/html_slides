@@ -1,0 +1,528 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Deep Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 40px;
+            overflow-y: auto;
+            background-color: white;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .slide-header {
+            margin-bottom: 30px;
+        }
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .slide-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #475569;
+        }
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .slide-image {
+            max-width: 100%;
+            max-height: 50vh;
+            margin: 20px auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .bullet-points {
+            list-style-type: none;
+            margin: 15px 0;
+        }
+        .bullet-points li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .bullet-points li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        .highlight {
+            background-color: #eff6ff;
+            padding: 15px;
+            border-left: 4px solid #3b82f6;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .quote {
+            font-style: italic;
+            color: #475569;
+            border-left: 3px solid #cbd5e1;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .tip {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+        }
+        .tip:before {
+            content: "💡";
+            position: absolute;
+            left: 15px;
+            top: 15px;
+        }
+        .tip-content {
+            margin-left: 30px;
+        }
+        .two-column {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .column {
+            flex: 1;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+        .nav-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .nav-button:hover {
+            background-color: #2563eb;
+        }
+        .nav-button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        .slide-indicator {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0 10px;
+        }
+        .link {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1 class="slide-title">Open Deep Research</h1>
+                <p class="slide-subtitle">A Flexible, Configurable Research Agent</p>
+            </div>
+            <div class="slide-content">
+                <img src="https://blog.langchain.com/content/images/2025/07/overview.png" alt="Open Deep Research Overview" class="slide-image">
+                <ul class="bullet-points">
+                    <li>Built on LangGraph - Simple and configurable</li>
+                    <li>Users can bring their own models, search tools, and MCP servers</li>
+                    <li>Open source implementation available on GitHub</li>
+                    <li>Try it out on Open Agent Platform</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: TL;DR -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">TL;DR</h1>
+                <p class="slide-subtitle">Deep Research as an Agent Application</p>
+            </div>
+            <div class="slide-content">
+                <ul class="bullet-points">
+                    <li>Deep research has become one of the most popular agent applications</li>
+                    <li>Major players with deep research products:
+                        <ul class="bullet-points">
+                            <li>OpenAI</li>
+                            <li>Anthropic</li>
+                            <li>Perplexity</li>
+                            <li>Google</li>
+                        </ul>
+                    </li>
+                    <li>All produce comprehensive reports using various sources of context</li>
+                    <li>Many open source implementations available</li>
+                </ul>
+                <div class="highlight">
+                    <p>We've built an <a href="https://github.com/langchain-ai/open_deep_research" class="link">open deep researcher</a> that is simple and configurable, allowing users to bring their own models, search tools, and MCP servers.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Challenge -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Challenge</h1>
+                <p class="slide-subtitle">Research as an Open-Ended Task</p>
+            </div>
+            <div class="slide-content">
+                <p>Research is an open-ended task; the best strategy to answer a user request can't be easily known in advance.</p>
+                
+                <div class="two-column">
+                    <div class="column">
+                        <div class="quote">"Compare these two products"</div>
+                        <p>Comparisons benefit from searching each product, followed by synthesis.</p>
+                    </div>
+                    <div class="column">
+                        <div class="quote">"Find the top 20 candidates for this role"</div>
+                        <p>Listing/ranking requires open-ended search, synthesis, and ranking.</p>
+                    </div>
+                </div>
+                
+                <div class="quote">"Is X really true?"</div>
+                <p>Validation questions require iterative deep research where source quality matters more than breadth.</p>
+                
+                <div class="highlight">
+                    <p><strong>Key Design Principle:</strong> Flexibility to explore different research strategies depending on the request.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Architectural Overview -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Architectural Overview</h1>
+                <p class="slide-subtitle">Three-Step Research Process</p>
+            </div>
+            <div class="slide-content">
+                <p>Agents are well suited to research because they can flexibly apply different strategies, using intermediate results to guide exploration.</p>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/simple.png" alt="Three-Step Research Process" class="slide-image">
+                
+                <ul class="bullet-points">
+                    <li><strong>Scope</strong> – clarify research scope</li>
+                    <li><strong>Research</strong> – perform research</li>
+                    <li><strong>Write</strong> – produce the final report</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Phase 1 - Scope -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Phase 1: Scope</h1>
+                <p class="slide-subtitle">Gather User Context for Research</p>
+            </div>
+            <div class="slide-content">
+                <img src="https://blog.langchain.com/content/images/2025/07/scope.png" alt="Scope Phase" class="slide-image">
+                
+                <h2 style="margin: 20px 0 10px;">User Clarification</h2>
+                <p>Users rarely provide sufficient context in a research request. We use a chat model to ask for additional context if necessary.</p>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/brief.png" alt="User Clarification" class="slide-image" style="max-height: 35vh;">
+                
+                <h2 style="margin: 20px 0 10px;">Brief Generation</h2>
+                <p>We translate the verbose chat interaction into a comprehensive, yet focused research brief that serves as our north star for success.</p>
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        We translate the researcher-user chat interaction into a focused brief for the research supervisor to measure against.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Phase 2 - Research -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Phase 2: Research</h1>
+                <p class="slide-subtitle">Gather Context Using a Supervisor Agent</p>
+            </div>
+            <div class="slide-content">
+                <img src="https://blog.langchain.com/content/images/2025/07/research.png" alt="Research Phase" class="slide-image">
+                
+                <h2 style="margin: 20px 0 10px;">Research Supervisor</h2>
+                <p>The supervisor delegates research tasks to an appropriate number of sub-agents. It determines if the research brief can be broken down into independent sub-topics and delegates to sub-agents with isolated context windows.</p>
+                
+                <h2 style="margin: 20px 0 10px;">Research Sub-Agents</h2>
+                <p>Each sub-agent focuses on a specific topic and conducts research as a tool-calling loop, using search tools and/or MCP tools configured by the user.</p>
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        We make an additional LLM call to clean sub-agent research findings so that the supervisor is provided with clean, processed information.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Phase 3 - Report Writing -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Phase 3: Report Writing</h1>
+                <p class="slide-subtitle">Produce the Final Report</p>
+            </div>
+            <div class="slide-content">
+                <p>The goal of report writing is to fulfill the request in the research brief using the gathered context from sub-agents.</p>
+                
+                <p>When the supervisor deems that the gathered findings are sufficient to address the request in the research brief, we move ahead to write the report.</p>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/one-shot.png" alt="Report Writing" class="slide-image">
+                
+                <p>To write the report, we provide an LLM with the research brief and all of the research findings returned by sub-agents. This final LLM call produces an output in one-shot, steered by the brief and answered with the research findings.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Lessons - Multi-agent Considerations -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Lessons</h1>
+                <p class="slide-subtitle">Multi-Agent Considerations</p>
+            </div>
+            <div class="slide-content">
+                <h2 style="margin-bottom: 15px;">Only use multi-agent for easily parallelized tasks</h2>
+                
+                <p>Multi vs. single-agent is an important design consideration. Cognition has argued against multi-agent because sub-agents working in parallel can be difficult to coordinate.</p>
+                
+                <p>Earlier versions of our research agent wrote sections of the final report in parallel with sub-agents. It was fast, but the reports were disjoint because the section-writing agents were not well coordinated.</p>
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        Multi-agents are hard to coordinate, and can perform poorly if writing sections of the report in parallel. We restrict multi-agent to research, and write the report in one-shot.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Lessons - Context Isolation -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Lessons</h1>
+                <p class="slide-subtitle">Context Isolation Benefits</p>
+            </div>
+            <div class="slide-content">
+                <h2 style="margin-bottom: 15px;">Multi-agent is useful for isolating context across sub-research topics</h2>
+                
+                <p>Single agent response quality suffers if the request has multiple sub-topics. The intuition is straightforward: a single context window needs to store and reason about tool feedback across all sub-topics.</p>
+                
+                <div class="quote">
+                    Compare the approaches of OpenAI vs Anthropic vs Google DeepMind to AI safety. I want to understand their different philosophical frameworks, research priorities, and how they're thinking about the alignment problem.
+                </div>
+                
+                <p>Our single agent implementation used its search tool to send separate queries about each frontier lab at the same time, but had to juggle context from three independent threads.</p>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/multi-agent.png" alt="Multi-Agent Approach" class="slide-image" style="max-height: 40vh;">
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        Context isolation of sub-topics during research can avoid various long context failure modes.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Lessons - Supervisor Flexibility -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Lessons</h1>
+                <p class="slide-subtitle">Supervisor Flexibility</p>
+            </div>
+            <div class="slide-content">
+                <h2 style="margin-bottom: 15px;">Multi-agent supervisor enables the system to tune to required research depth</h2>
+                
+                <p>Users do not want simple requests to take 10+ minutes. But, there are some requests that require research with higher token utilization and latency.</p>
+                
+                <p>The supervisor can handle both cases by selectively spawning sub-agents to tune the level of research depth needed for a request. The supervisor is prompted with heuristics to reason about when research should be parallelized, and when a single thread of research is sufficient.</p>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/big-research.png" alt="Research Supervisor Iteration" class="slide-image">
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        A multi-agent supervisor allows for flexibility of search strategy.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Lessons - Context Engineering -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Lessons</h1>
+                <p class="slide-subtitle">Context Engineering</p>
+            </div>
+            <div class="slide-content">
+                <h2 style="margin-bottom: 15px;">Context Engineering is important to mitigate token bloat and steer behavior</h2>
+                
+                <p>Research is a token-heavy task. Anthropic reported that their multi-agent system used 15x more tokens than a typical chat application!</p>
+                
+                <p>We used context engineering to mitigate this:</p>
+                <ul class="bullet-points">
+                    <li>We compress the chat history into a research brief</li>
+                    <li>Sub-agents prune their research findings to remove irrelevant tokens</li>
+                </ul>
+                
+                <p>Without sufficient context engineering, our agent was prone to running into context window limits from long, raw tool-call results.</p>
+                
+                <div class="tip">
+                    <div class="tip-content">
+                        Context engineering has many practical benefits. It saves tokens, helps avoid context window limits, and helps stay under model rate limits.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Next Steps -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Next Steps</h1>
+                <p class="slide-subtitle">Future Improvements</p>
+            </div>
+            <div class="slide-content">
+                <p>Open deep research is a living project and we have several ideas we want to try. These are some of the open questions that we're thinking about:</p>
+                
+                <ul class="bullet-points">
+                    <li>What is the best way to handle token-heavy tool responses, and what is the best way to filter out irrelevant context to reduce unnecessary token expenditure?</li>
+                    <li>Are there any evaluations worth running in the hot path of the agent to ensure high quality responses?</li>
+                    <li>Deep research reports are valuable and relatively expensive to create, can we store this work and leverage these in the future with long-term memory?</li>
+                </ul>
+                
+                <img src="https://blog.langchain.com/content/images/2025/07/actualbrief.png" alt="Research Brief Example" class="slide-image" style="max-height: 40vh;">
+            </div>
+        </div>
+
+        <!-- Slide 13: Using Open Deep Research -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Using Open Deep Research</h1>
+                <p class="slide-subtitle">Get Started Today</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-column">
+                    <div class="column">
+                        <h2 style="margin-bottom: 15px;">LangGraph Studio</h2>
+                        <p>You can clone our LangGraph code and run Open Deep Research locally with LangGraph Studio.</p>
+                        <p>You can use Studio to test out the prompts and architecture and tailor them more specifically to your use cases!</p>
+                        <p style="margin-top: 15px;"><a href="https://github.com/langchain-ai/open_deep_research" class="link">View on GitHub</a></p>
+                    </div>
+                    <div class="column">
+                        <h2 style="margin-bottom: 15px;">Open Agent Platform</h2>
+                        <p>We've hosted Open Deep Research on our demo instance of Open Agent Platform (OAP).</p>
+                        <p>OAP is a citizen developer platform, allowing users to build, prototype, and use agents - all you need to do is pass in your API keys.</p>
+                        <p style="margin-top: 15px;"><a href="https://oap.langchain.com/" class="link">Try it on OAP</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)" disabled="">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="slide-indicator" id="slideIndicator">1 / 13</span>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="nav-button" onclick="savePage()">
+                <i class="fas fa-save"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            if (n >= totalSlides) currentSlide = 0;
+            if (n < 0) currentSlide = totalSlides - 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('slideIndicator').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        function savePage() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'open_deep_research_slides.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize the first slide
+        showSlide(currentSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 's' || e.key === 'S') savePage();
+        });
+    </script>
+
+</body></html>
