@@ -18,46 +18,31 @@ def generate_index(path="."):
     <title>Slides Index</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: sans-serif;
             max-width: 800px;
             margin: 2rem auto;
             padding: 0 1rem;
-            background-color: #fdfdfd;
         }
         h1 {
             text-align: center;
-            color: #2c3e50;
-            border-bottom: 2px solid #ecf0f1;
+            border-bottom: 1px solid #eee;
             padding-bottom: 0.5rem;
             margin-bottom: 2rem;
+            font-weight: normal;
         }
         ul {
             list-style: none;
             padding: 0;
         }
-        li {
-            margin-bottom: 0.8rem;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            transition: all 0.2s ease-in-out;
-        }
-        li:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.12);
-        }
         a {
             text-decoration: none;
-            color: #3498db;
+            color: #007bff;
             display: block;
-            padding: 1rem 1.5rem;
+            padding: 0.2rem 0;
             font-size: 1.1rem;
-            font-weight: 500;
         }
         a:hover {
-            color: #2980b9;
+            text-decoration: underline;
         }
     </style>
 </head>
