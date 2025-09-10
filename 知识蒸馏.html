@@ -1,0 +1,401 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识蒸馏 (Knowledge Distillation)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .slide-content {
+            max-width: 90%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        h2 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            color: #3498db;
+        }
+        h3 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #2980b9;
+        }
+        p, li {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #34495e;
+            text-align: left;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 30px;
+            text-align: left;
+        }
+        img {
+            max-width: 80%;
+            max-height: 50vh;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 1.2rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .slide-indicator {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide">
+        <div class="slide-content">
+            <h1>知识蒸馏 (Knowledge Distillation)</h1>
+            <p style="font-size: 2rem; margin-bottom: 30px;">模型压缩与加速的经典方法</p>
+            <p style="font-size: 1.6rem;">基于 Hinton 2014年 NIPS 论文《Distilling the Knowledge in a Neural Network》</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: 引言 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>引言</h2>
+            <ul>
+                <li>知识蒸馏是模型压缩和加速的经典方法之一</li>
+                <li>2014年NIPS上由Google的Hinton首次提出</li>
+                <li>核心思想：将大模型学到的知识转移到小模型上</li>
+                <li>目标：在保持性能的同时，减小模型大小和计算量</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 3: 知识蒸馏的基本思路 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>知识蒸馏的基本思路</h2>
+            <ul>
+                <li>复杂网络：参数多，计算量大，性能好</li>
+                <li>小型网络：参数少，计算量小，但难以达到大模型的性能</li>
+                <li>集成学习：使用多个大模型提升整体性能</li>
+                <li>问题：如何在保持性能的同时减小模型规模？</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 4: 提升性能和落地部署不要用相同的模型 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>提升性能和落地部署不要用相同的模型</h2>
+            <ul>
+                <li>常见开发范式：训练大模型 → 部署大模型</li>
+                <li>作者观点：<span class="highlight">用一样的模型是不对的</span></li>
+                <li>应该用不同的模型：
+                    <ul>
+                        <li>训练用复杂大模型：目标为提高性能</li>
+                        <li>部署用小模型：目标为速度和节约资源</li>
+                    </ul>
+                </li>
+                <li>类似昆虫的幼体形态（提取能量）和成虫形态（迁徙繁殖）</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: 大模型的Softmax输出概率里面富含知识 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>大模型的Softmax输出概率里面富含知识</h2>
+            <ul>
+                <li>通常认为知识体现在模型参数中，难以精简</li>
+                <li>从更高层次看：知识是<span class="highlight">将输入向量映射到输出向量的函数</span></li>
+                <li>Softmax输出不仅包含正确类别的概率，还包含错误类别的相对概率</li>
+                <li>这些相对概率包含大量有用信息：
+                    <ul>
+                        <li>例：宝马轿车被分类为垃圾车的概率 &gt; 被分类为胡萝卜的概率</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 6: 我们要学的不是真值标签！要学的其实是泛化能力！ -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>我们要学的不是真值标签！要学的其实是泛化能力！</h2>
+            <ul>
+                <li>训练目标：提升模型在未见样本上的泛化能力</li>
+                <li>通常简化为：提升模型在训练集上对真值标签的预测能力</li>
+                <li>问题：<span class="highlight">如果我们已经有了一个泛化能力很强的模型，为什么不让小模型直接学习它的泛化能力呢？</span></li>
+                <li>直接学习大模型的泛化能力比学习真值标签更有效</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 7: 怎么学习泛化能力呢？知识蒸馏！ -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>怎么学习泛化能力呢？知识蒸馏！</h2>
+            <ul>
+                <li>知识蒸馏：将大模型对样本输出的概率向量作为<span class="highlight">软目标（soft targets）</span></li>
+                <li>让小模型的输出尽量接近软目标（而非One-hot编码）</li>
+                <li>训练样本：
+                    <ul>
+                        <li>可与训练大模型的样本相同</li>
+                        <li>也可使用独立的Transfer集</li>
+                    </ul>
+                </li>
+                <li>优势：<span class="highlight">"soft targets"比One-hot编码携带更多信息</span></li>
+                <li>训练小模型时可用更少的训练集和更大的学习率</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 8: 当"soft targets"携带信息太少怎么办？用高温T煮出来！ -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>当"soft targets"携带信息太少怎么办？用高温T煮出来！</h2>
+            <ul>
+                <li>问题：对于简单任务（如MNIST），大模型输出的soft targets接近One-hot编码</li>
+                <li>重要信息集中在值很小的概率上，但对交叉熵影响小</li>
+                <li>解决方案：
+                    <ul>
+                        <li>Caruana方法：使用logits（Softmax的输入）作为学习目标</li>
+                        <li>Hinton方法：<span class="highlight">引入温度参数T放大（蒸馏）小概率值携带的信息</span></li>
+                    </ul>
+                </li>
+                <li>Caruana方法是Hinton方法的特例</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 9: 关于训练集 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>关于训练集</h2>
+            <ul>
+                <li>知识蒸馏训练小模型的训练集：
+                    <ul>
+                        <li>可以是无标签的数据</li>
+                        <li>也可以是最初训练大模型的数据</li>
+                    </ul>
+                </li>
+                <li>实际应用：<span class="highlight">有最初训练大模型的带标签训练集效果更好</span></li>
+                <li>训练小模型的目标函数可包含两部分：
+                    <ul>
+                        <li>让小模型预测大模型的Soft target</li>
+                        <li>让小模型预测样本的真值标签</li>
+                    </ul>
+                </li>
+                <li>加入真值标签损失有助于小模型学习Soft target</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 10: 蒸馏过程 -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h2>蒸馏过程</h2>
+            <img src="https://picx.zhimg.com/v2-0191aaee35986af34e09adecb5ed1807_1440w.jpg" alt="知识蒸馏过程示意图">
+            <ul>
+                <li>左图和中间图：训练过程</li>
+                <li>右图：预测过程</li>
+                <li>步骤：
+                    <ul>
+                        <li>训练一个大模型（性能良好）</li>
+                        <li>用大模型训练小模型</li>
+                        <li>引入温度T，计算Soft target</li>
+                        <li>小模型输出与Soft target的交叉熵作为损失的一部分</li>
+                        <li>预测时不需要温度T</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 11: 再来说说T的取值 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>再来说说T的取值</h2>
+            <img src="https://pic2.zhimg.com/v2-61827e54f6a0259539952c57d7b904ff_1440w.jpg" alt="温度T对Softmax输出的影响">
+            <img src="https://pic2.zhimg.com/v2-eda69ac444515579e2f7a54273b881d7_1440w.jpg" alt="温度T的公式">
+            <ul>
+                <li>温度T的作用：放大小概率携带的信息</li>
+                <li>温度T越高：
+                    <ul>
+                        <li>软目标越平滑</li>
+                        <li>信息不会集中在少数分量上</li>
+                    </ul>
+                </li>
+                <li>温度T的取值是经验性问题</li>
+                <li>当小模型非常小时，适中（偏小）的温度T效果最好</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 12: 总结 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>总结</h2>
+            <ul>
+                <li>Hinton首次提出知识蒸馏概念并引入温度系数</li>
+                <li>知识蒸馏可作为模型加速和压缩的方法</li>
+                <li>核心思想：
+                    <ul>
+                        <li>训练用大模型，部署用小模型</li>
+                        <li>小模型学习大模型的泛化能力</li>
+                        <li>使用soft targets而非hard targets</li>
+                        <li>引入温度T放大有用信息</li>
+                    </ul>
+                </li>
+                <li>实际应用中需考虑温度选择、数据集选择等细节</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 13: 参考资料 -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>参考资料</h2>
+            <ul>
+                <li>Distilling the Knowledge in a Neural Network
+                    <ul>
+                        <li>https://arxiv.org/abs/1503.02531</li>
+                    </ul>
+                </li>
+                <li>Model Compression
+                    <ul>
+                        <li>https://www.cs.cornell.edu/~caruana/compression.kdd06.pdf</li>
+                    </ul>
+                </li>
+                <li>知识蒸馏、在线蒸馏
+                    <ul>
+                        <li>https://blog.csdn.net/xbinworld/article/details/83063726</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button id="prevBtn">上一页</button>
+        <span class="slide-indicator">10 / 13</span>
+        <button id="nextBtn">下一页</button>
+        <button id="saveBtn">保存</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const slideIndicator = document.querySelector('.slide-indicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const saveBtn = document.getElementById('saveBtn');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            slideIndicator.textContent = `${index + 1} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function savePage() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '知识蒸馏.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        saveBtn.addEventListener('click', savePage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 's' || e.key === 'S') {
+                savePage();
+            }
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            padding: 40px;
+            background-color: white;
+            position: relative;
+            overflow-y: auto;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+        h2 {
+            font-size: 36px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        li {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        img {
+            max-width: 100%;
+            max-height: 60vh;
+            margin: 20px 0;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .slide-indicator {
+            font-size: 16px;
+            color: #555;
+        }
+        .highlight {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="center-content">
+            <img src="https://blog.langchain.com/content/images/size/w760/format/webp/2025/08/Deep-Agents_blog-header-1.png" alt="Deep Agents">
+            <h1>Deep Agents</h1>
+            <p>Building AI agents that can plan and act over longer, more complex tasks</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Introduction -->
+    <div class="slide">
+        <h1>Introduction to Deep Agents</h1>
+        <p>Using an LLM to call tools in a loop is the simplest form of an agent. However, this architecture can yield agents that are "shallow" and fail to plan and act over longer, more complex tasks.</p>
+        <div class="highlight">
+            <p>Applications like "Deep Research", "Manus", and "Claude Code" have overcome this limitation by implementing a combination of four key components:</p>
+            <ul>
+                <li>A planning tool</li>
+                <li>Sub agents</li>
+                <li>Access to a file system</li>
+                <li>A detailed prompt</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 3: Deep Agents in the Wild -->
+    <div class="slide">
+        <h1>Deep Agents in the Wild</h1>
+        <p>The dominant agent architecture is simple: running in a loop, calling tools. But this leads to "shallow" agents that can't plan over longer time horizons.</p>
+        <p>Research and coding have emerged as two areas where agents have been created that buck this trend. All major model providers have agents for:</p>
+        <ul>
+            <li>Deep Research</li>
+            <li>"Async" coding tasks</li>
+        </ul>
+        <div class="highlight">
+            <p>I refer to these agents as "deep agents" - for their ability to dive deep on topics. They are generally capable of planning more complex tasks and executing over longer time horizons.</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: What Makes Deep Agents Good -->
+    <div class="slide">
+        <h1>What Makes These Agents Good at Going Deep?</h1>
+        <p>The core algorithm is the same - an LLM running in a loop calling tools. The difference is:</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Detailed System Prompt</h3>
+                <p>Long prompts with detailed instructions and examples</p>
+            </div>
+            <div class="feature-card">
+                <h3>Planning Tool</h3>
+                <p>Keeps the agent on track with tasks</p>
+            </div>
+            <div class="feature-card">
+                <h3>Sub Agents</h3>
+                <p>Allows splitting up tasks for deeper focus</p>
+            </div>
+            <div class="feature-card">
+                <h3>File System</h3>
+                <p>Provides memory and shared workspace</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Detailed System Prompt -->
+    <div class="slide">
+        <h1>Detailed System Prompt</h1>
+        <p>Claude Code's recreated system prompts are long. They contain:</p>
+        <ul>
+            <li>Detailed instructions on how to use tools</li>
+            <li>Examples (few shot prompts) on how to behave in certain situations</li>
+        </ul>
+        <div class="highlight">
+            <p>Claude Code is not an anomaly - most of the best coding or deep research agents have pretty complex system prompts. Without these system prompts, the agents would not be nearly as deep. Prompting matters still!</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: Planning Tool -->
+    <div class="slide">
+        <h1>Planning Tool</h1>
+        <p>Claude Code uses a Todo list tool. Funnily enough - this doesn't do anything! It's basically a no-op. It's just a context engineering strategy to keep the agent on track.</p>
+        <div class="highlight">
+            <p>Deep agents are better at executing on complex tasks over longer time horizons. Planning (even if done via a no-op tool call) is a big component of that.</p>
+        </div>
+        <img src="https://blog.langchain.com/content/images/2025/07/Screenshot-2025-07-30-at-9.08.32-AM.png" alt="Planning Tool Example">
+    </div>
+
+    <!-- Slide 7: Sub Agents -->
+    <div class="slide">
+        <h1>Sub Agents</h1>
+        <p>Claude Code can spawn sub agents. This allows it to split up tasks. You can also create custom sub agents to have more control.</p>
+        <ul>
+            <li>Allows for "context management and prompt shortcuts"</li>
+            <li>Enables splitting complex tasks into manageable parts</li>
+            <li>Each sub agent can focus deeply on its specific task</li>
+        </ul>
+        <div class="highlight">
+            <p>Deep agents go deeper on topics. This is largely accomplished by spinning up sub agents that are specifically focused on individual tasks, and allowing those sub agents to go deep there.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: File System -->
+    <div class="slide">
+        <h1>File System</h1>
+        <p>Claude Code has access to the file system and can modify files:</p>
+        <ul>
+            <li>To complete its task</li>
+            <li>To jot down notes</li>
+            <li>As a shared workspace for all agents and sub agents to collaborate</li>
+        </ul>
+        <div class="highlight">
+            <p>Manus is another example of a deep agent that makes significant use of a file system for "memory".</p>
+        </div>
+        <p>Deep agents run for long periods and accumulate context. Having a file system to store and later read from is helpful for managing this context.</p>
+    </div>
+
+    <!-- Slide 9: Build Your Deep Agent -->
+    <div class="slide">
+        <h1>Build Your Deep Agent</h1>
+        <p>To make it easier for everyone to build a deep agent for their specific vertical, an open source package (<code>deepagents</code>) was created.</p>
+        <p>Install with: <code>pip install deepagents</code></p>
+        <p>This package provides built-in components:</p>
+        <ul>
+            <li>A system prompt inspired by Claude Code, modified to be more general</li>
+            <li>A no-op Todo list planning tool (same as Claude Code)</li>
+            <li>Ability to spawn sub-agents, and specify your own</li>
+            <li>A mocked out "virtual file system" that uses the agent's state</li>
+        </ul>
+        <p>You can easily create your own deep agent by passing in custom prompts, tools, and subagents.</p>
+    </div>
+
+    <!-- Slide 10: Call to Action -->
+    <div class="slide">
+        <div class="center-content">
+            <h1>Try Out Deep Agents</h1>
+            <p>Start building your own deep agents for your specific vertical today!</p>
+            <a href="https://github.com/hwchase17/deepagents" class="cta-button" target="_blank">TRY OUT `deepagents` HERE</a>
+            <p style="margin-top: 30px;">Check out the example "deep research" agent built on top of deepagents.</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+        <span class="slide-indicator"><span id="currentSlide">1</span> / <span id="totalSlides">10</span></span>
+        <button id="nextBtn" onclick="changeSlide(1)">Next</button>
+        <button id="saveBtn" onclick="saveSlides()">Save</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            showSlide(currentSlideIndex);
+        }
+        
+        function saveSlides() {
+            // In a real implementation, this would save the slides or export them
+            alert('Slides saved successfully!');
+        }
+        
+        // Initialize
+        showSlide(0);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Engineering for Agents</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .slide {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide.active {
+            display: flex;
+        }
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            color: #222;
+        }
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        p, li {
+            font-size: 1.4em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        ul {
+            padding-left: 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            max-height: 50vh;
+            margin: 20px auto;
+            display: block;
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 8px 15px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .slide-indicator {
+            font-size: 1em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide active">
+        <h1>Context Engineering for Agents</h1>
+        <p>By Lance Martin</p>
+        <p>TL;DR: Agents need context to perform tasks. Context engineering is the art and science of filling the context window with just the right information at each step.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Context Engineering</h2>
+        <p>LLMs are like a new kind of operating system. The LLM is the CPU, and its context window is the RAM.</p>
+        <p>Context engineering is the "...delicate art and science of filling the context window with just the right information for the next step." - Andrej Karpathy</p>
+        <img src="https://rlancemartin.github.io/assets/context_types.png" alt="Context Types">
+    </div>
+
+    <div class="slide">
+        <h2>Types of Context</h2>
+        <ul>
+            <li><strong>Instructions</strong> – prompts, memories, few-shot examples, tool descriptions, etc.</li>
+            <li><strong>Knowledge</strong> – facts, memories, etc.</li>
+            <li><strong>Tools</strong> – feedback from tool calls.</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h2>Context Engineering for Agents</h2>
+        <p>Agents interleave LLM invocations and tool calls for long-running tasks.</p>
+        <img src="https://rlancemartin.github.io/assets/agent_flow.png" alt="Agent Flow">
+    </div>
+
+    <div class="slide">
+        <h2>Problems with Long Context</h2>
+        <ul>
+            <li>Context Poisoning: Hallucinations in context.</li>
+            <li>Context Distraction: Context overwhelms training.</li>
+            <li>Context Confusion: Superfluous context influences response.</li>
+            <li>Context Clash: Parts of context disagree.</li>
+        </ul>
+        <p>"Context engineering is effectively the #1 job of engineers building AI agents." - Cognition</p>
+    </div>
+
+    <div class="slide">
+        <h2>Four Strategies for Context Engineering</h2>
+        <ol>
+            <li>Write Context</li>
+            <li>Select Context</li>
+            <li>Compress Context</li>
+            <li>Isolate Context</li>
+        </ol>
+        <img src="https://rlancemartin.github.io/assets/context_eng_overview.png" alt="Context Engineering Overview">
+    </div>
+
+    <div class="slide">
+        <h2>Write Context</h2>
+        <p>Saving context outside the context window to help an agent perform a task.</p>
+        <h3>Scratchpads</h3>
+        <p>Agents take notes and save information externally, similar to humans.</p>
+        <p>Example: Anthropic's multi-agent researcher saves plans to memory to avoid truncation.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Write Context (Cont.)</h2>
+        <h3>Memories</h3>
+        <p>Agents remember things across many sessions.</p>
+        <p>Examples: Reflexion, Generative Agents, ChatGPT, Cursor, Windsurf.</p>
+        <img src="https://rlancemartin.github.io/assets/llm_write_memory.png" alt="LLM Write Memory">
+    </div>
+
+    <div class="slide">
+        <h2>Select Context</h2>
+        <p>Pulling context into the context window to help an agent perform a task.</p>
+        <h3>Scratchpad</h3>
+        <p>Agents read from scratchpads via tool calls or state exposure.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Select Context (Cont.)</h2>
+        <h3>Memories</h3>
+        <p>Agents select relevant memories: episodic, procedural, or semantic.</p>
+        <img src="https://rlancemartin.github.io/assets/memory_types.png" alt="Memory Types">
+        <p>Challenges: Ensuring relevance and avoiding undesired retrieval.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Select Context (Cont.)</h2>
+        <h3>Tools</h3>
+        <p>RAG applied to tool descriptions improves tool selection accuracy.</p>
+        <h3>Knowledge</h3>
+        <p>RAG is central to context engineering, especially in code agents.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Compress Context</h2>
+        <p>Retaining only the tokens required to perform a task.</p>
+        <h3>Context Summarization</h3>
+        <p>Summarize agent interactions to manage token use. Example: Claude Code auto-compact.</p>
+        <img src="https://rlancemartin.github.io/assets/context_curation.png" alt="Context Curation">
+    </div>
+
+    <div class="slide">
+        <h2>Compress Context (Cont.)</h2>
+        <h3>Context Trimming</h3>
+        <p>Filter or prune context using heuristics or trained models.</p>
+        <p>Example: Removing older messages or using Provence for QA.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Isolate Context</h2>
+        <p>Splitting context up to help an agent perform a task.</p>
+        <h3>Multi-agent</h3>
+        <p>Split context across sub-agents for separation of concerns.</p>
+        <img src="https://rlancemartin.github.io/assets/multi_agent.png" alt="Multi Agent">
+    </div>
+
+    <div class="slide">
+        <h2>Isolate Context (Cont.)</h2>
+        <h3>Context Isolation with Environments</h3>
+        <p>Use sandboxes (e.g., CodeAgent) to isolate token-heavy objects.</p>
+        <img src="https://rlancemartin.github.io/assets/isolation.png" alt="Isolation">
+    </div>
+
+    <div class="slide">
+        <h2>Isolate Context (Cont.)</h2>
+        <h3>State</h3>
+        <p>Runtime state objects isolate context with schema design.</p>
+        <p>Example: Expose only necessary fields to the LLM each turn.</p>
+    </div>
+
+    <div class="slide">
+        <h2>Conclusion</h2>
+        <p>Context engineering strategies:</p>
+        <ul>
+            <li><strong>Write</strong>: Save context outside the window.</li>
+            <li><strong>Select</strong>: Pull context into the window.</li>
+            <li><strong>Compress</strong>: Retain only necessary tokens.</li>
+            <li><strong>Isolate</strong>: Split context across agents or environments.</li>
+        </ul>
+        <p>Understanding these patterns is key to building effective agents.</p>
+    </div>
+
+    <div class="controls">
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+        <button id="save">Save</button>
+        <span class="slide-indicator">Slide <span id="current">1</span> of <span id="total">17</span></span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+            document.getElementById('current').textContent = currentSlide + 1;
+        }
+
+        document.getElementById('next').addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        });
+
+        document.getElementById('prev').addEventListener('click', () => {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        document.getElementById('save').addEventListener('click', () => {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'context_engineering_slides.html';
+            a.click();
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

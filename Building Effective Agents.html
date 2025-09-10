@@ -1,0 +1,495 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Effective Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            overflow: hidden;
+        }
+        
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            padding: 60px;
+            background-color: white;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: #1d1d1f;
+            line-height: 1.2;
+        }
+        
+        .slide h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+            line-height: 1.3;
+        }
+        
+        .slide h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #1d1d1f;
+        }
+        
+        .slide p {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .slide ul, .slide ol {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding-left: 30px;
+        }
+        
+        .slide li {
+            margin-bottom: 10px;
+        }
+        
+        .slide img {
+            max-width: 80%;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .two-column {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .column {
+            flex: 1;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .controls button {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .controls button:hover {
+            background: #0051d5;
+            transform: translateY(-1px);
+        }
+        
+        .controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-indicator {
+            font-size: 16px;
+            color: #666;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .definition-box {
+            background: #f5f5f7;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #0071e3;
+            font-weight: 600;
+        }
+        
+        .workflow-box {
+            border-left: 4px solid #0071e3;
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide">
+        <h1>Building Effective Agents</h1>
+        <p style="font-size: 26px; margin-bottom: 40px;">Simple, Composable Patterns for LLM Systems</p>
+        <p>Over the past year, we've worked with dozens of teams building large language model (LLM) agents across industries. Consistently, the most successful implementations weren't using complex frameworks or specialized libraries. Instead, they were building with simple, composable patterns.</p>
+        <p>In this presentation, we share what we've learned from working with customers and building agents ourselves, and give practical advice for developers on building effective agents.</p>
+    </div>
+
+    <!-- Slide 2: What are agents? -->
+    <div class="slide">
+        <h2>What are agents?</h2>
+        <p>"Agent" can be defined in several ways. At Anthropic, we categorize all these variations as <span class="highlight">agentic systems</span>, but draw an important architectural distinction:</p>
+        
+        <div class="definition-box">
+            <h3>Workflows</h3>
+            <p>Systems where LLMs and tools are orchestrated through predefined code paths.</p>
+        </div>
+        
+        <div class="definition-box">
+            <h3>Agents</h3>
+            <p>Systems where LLMs dynamically direct their own processes and tool usage, maintaining control over how they accomplish tasks.</p>
+        </div>
+        
+        <p>Below, we will explore both types of agentic systems in detail.</p>
+    </div>
+
+    <!-- Slide 3: When to use agents -->
+    <div class="slide">
+        <h2>When (and when not) to use agents</h2>
+        <p>When building applications with LLMs, we recommend finding the simplest solution possible, and only increasing complexity when needed. This might mean not building agentic systems at all.</p>
+        
+        <div class="workflow-box">
+            <h3>Considerations</h3>
+            <ul>
+                <li>Agentic systems often trade latency and cost for better task performance</li>
+                <li>Workflows offer predictability and consistency for well-defined tasks</li>
+                <li>Agents are better when flexibility and model-driven decision-making are needed at scale</li>
+                <li>For many applications, optimizing single LLM calls with retrieval and in-context examples is usually enough</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 4: Frameworks -->
+    <div class="slide">
+        <h2>When and how to use frameworks</h2>
+        <p>There are many frameworks that make agentic systems easier to implement, including:</p>
+        
+        <ul>
+            <li><strong>LangGraph</strong> from LangChain</li>
+            <li>Amazon Bedrock's <strong>AI Agent framework</strong></li>
+            <li><strong>Rivet</strong>, a drag and drop GUI LLM workflow builder</li>
+            <li><strong>Vellum</strong>, another GUI tool for building and testing complex workflows</li>
+        </ul>
+        
+        <div class="workflow-box">
+            <h3>Our recommendation</h3>
+            <ul>
+                <li>Start by using LLM APIs directly</li>
+                <li>Many patterns can be implemented in a few lines of code</li>
+                <li>If you use a framework, ensure you understand the underlying code</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: Building block - The augmented LLM -->
+    <div class="slide">
+        <h2>Building block: The augmented LLM</h2>
+        <p>The basic building block of agentic systems is an LLM enhanced with augmentations such as retrieval, tools, and memory. Our current models can actively use these capabilities—generating their own search queries, selecting appropriate tools, and determining what information to retain.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2Fd3083d3f40bb2b6f477901cc9a240738d3dd1371-2401x1000.png&amp;w=3840&amp;q=75" alt="The augmented LLM">
+        
+        <p>We recommend focusing on two key aspects: tailoring these capabilities to your specific use case and ensuring they provide an easy, well-documented interface for your LLM.</p>
+    </div>
+
+    <!-- Slide 6: Workflow - Prompt chaining -->
+    <div class="slide">
+        <h2>Workflow: Prompt chaining</h2>
+        <p>Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks on any intermediate steps to ensure that the process is still on track.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F7418719e3dab222dccb379b8879e1dc08ad34c78-2401x1000.png&amp;w=3840&amp;q=75" alt="The prompt chaining workflow">
+        
+        <div class="workflow-box">
+            <h3>When to use this workflow</h3>
+            <p>Ideal for situations where the task can be easily and cleanly decomposed into fixed subtasks. The main goal is to trade off latency for higher accuracy, by making each LLM call an easier task.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Workflow - Routing -->
+    <div class="slide">
+        <h2>Workflow: Routing</h2>
+        <p>Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F5c0c0e9fe4def0b584c04d37849941da55e5e71c-2401x1000.png&amp;w=3840&amp;q=75" alt="The routing workflow">
+        
+        <div class="workflow-box">
+            <h3>When to use this workflow</h3>
+            <p>Works well for complex tasks where there are distinct categories that are better handled separately, and where classification can be handled accurately.</p>
+        </div>
+        
+        <div class="workflow-box">
+            <h3>Examples</h3>
+            <ul>
+                <li>Directing different types of customer service queries to different downstream processes</li>
+                <li>Routing easy questions to smaller models and hard questions to more capable models</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 8: Workflow - Parallelization -->
+    <div class="slide">
+        <h2>Workflow: Parallelization</h2>
+        <p>LLMs can sometimes work simultaneously on a task and have their outputs aggregated programmatically. This workflow manifests in two key variations:</p>
+        
+        <div class="two-column">
+            <div class="column">
+                <div class="definition-box">
+                    <h3>Sectioning</h3>
+                    <p>Breaking a task into independent subtasks run in parallel.</p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="definition-box">
+                    <h3>Voting</h3>
+                    <p>Running the same task multiple times to get diverse outputs.</p>
+                </div>
+            </div>
+        </div>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F406bb032ca007fd1624f261af717d70e6ca86286-2401x1000.png&amp;w=3840&amp;q=75" alt="The parallelization workflow">
+        
+        <div class="workflow-box">
+            <h3>When to use this workflow</h3>
+            <p>Effective when subtasks can be parallelized for speed, or when multiple perspectives are needed for higher confidence results.</p>
+        </div>
+    </div>
+
+    <!-- Slide 9: Workflow - Orchestrator-workers -->
+    <div class="slide">
+        <h2>Workflow: Orchestrator-workers</h2>
+        <p>In the orchestrator-workers workflow, a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F8985fc683fae4780fb34eab1365ab78c7e51bc8e-2401x1000.png&amp;w=3840&amp;q=75" alt="The orchestrator-workers workflow">
+        
+        <div class="workflow-box">
+            <h3>When to use this workflow</h3>
+            <p>Well-suited for complex tasks where you can't predict the subtasks needed. The key difference from parallelization is its flexibility—subtasks aren't pre-defined, but determined by the orchestrator.</p>
+        </div>
+        
+        <div class="workflow-box">
+            <h3>Example</h3>
+            <p>Coding products that make complex changes to multiple files each time.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: Workflow - Evaluator-optimizer -->
+    <div class="slide">
+        <h2>Workflow: Evaluator-optimizer</h2>
+        <p>In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F14f51e6406ccb29e695da48b17017e899a6119c7-2401x1000.png&amp;w=3840&amp;q=75" alt="The evaluator-optimizer workflow">
+        
+        <div class="workflow-box">
+            <h3>When to use this workflow</h3>
+            <p>Particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. This is analogous to the iterative writing process a human writer might go through.</p>
+        </div>
+        
+        <div class="workflow-box">
+            <h3>Examples</h3>
+            <ul>
+                <li>Literary translation where nuances might not be captured initially</li>
+                <li>Complex search tasks requiring multiple rounds of searching and analysis</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 11: Agents -->
+    <div class="slide">
+        <h2>Agents</h2>
+        <p>Agents are emerging in production as LLMs mature in key capabilities—understanding complex inputs, engaging in reasoning and planning, using tools reliably, and recovering from errors.</p>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F58d9f10c985c4eb5d53798dea315f7bb5ab6249e-2401x1000.png&amp;w=3840&amp;q=75" alt="Autonomous agent">
+        
+        <div class="workflow-box">
+            <h3>When to use agents</h3>
+            <ul>
+                <li>For open-ended problems where it's difficult to predict the required number of steps</li>
+                <li>When you can't hardcode a fixed path</li>
+                <li>When you must have some level of trust in the LLM's decision-making</li>
+                <li>For scaling tasks in trusted environments</li>
+            </ul>
+        </div>
+        
+        <p class="highlight">Note: The autonomous nature of agents means higher costs, and the potential for compounding errors. We recommend extensive testing in sandboxed environments.</p>
+    </div>
+
+    <!-- Slide 12: Combining and customizing patterns -->
+    <div class="slide">
+        <h2>Combining and customizing these patterns</h2>
+        <p>These building blocks aren't prescriptive. They're common patterns that developers can shape and combine to fit different use cases.</p>
+        
+        <div class="definition-box">
+            <h3>Key to success</h3>
+            <p>As with any LLM features, measuring performance and iterating on implementations is crucial. You should consider adding complexity only when it demonstrably improves outcomes.</p>
+        </div>
+        
+        <img src="https://www.anthropic.com/_next/image?url=https%3A%2F%2Fwww-cdn.anthropic.com%2Fimages%2F4zrzovbb%2Fwebsite%2F4b9a1f4eb63d5962a6e1746ac26bbc857cf3474f-2400x1666.png&amp;w=3840&amp;q=75" alt="High-level flow of a coding agent">
+        
+        <p>Frameworks can help you get started quickly, but don't hesitate to reduce abstraction layers and build with basic components as you move to production.</p>
+    </div>
+
+    <!-- Slide 13: Summary -->
+    <div class="slide">
+        <h2>Summary</h2>
+        <p>Success in the LLM space isn't about building the most sophisticated system. It's about building the <span class="highlight">right</span> system for your needs.</p>
+        
+        <div class="workflow-box">
+            <h3>Our approach</h3>
+            <ol>
+                <li>Start with simple prompts</li>
+                <li>Optimize them with comprehensive evaluation</li>
+                <li>Add multi-step agentic systems only when simpler solutions fall short</li>
+            </ol>
+        </div>
+        
+        <div class="workflow-box">
+            <h3>Three core principles for implementing agents</h3>
+            <ol>
+                <li>Maintain <strong>simplicity</strong> in your agent's design</li>
+                <li>Prioritize <strong>transparency</strong> by explicitly showing the agent's planning steps</li>
+                <li>Carefully craft your agent-computer interface (ACI) through thorough tool <strong>documentation and testing</strong></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Slide 14: Appendix 1 - Agents in practice -->
+    <div class="slide">
+        <h2>Appendix 1: Agents in practice</h2>
+        <p>Our work with customers has revealed two particularly promising applications for AI agents that demonstrate the practical value of the patterns discussed above.</p>
+        
+        <div class="two-column">
+            <div class="column">
+                <div class="definition-box">
+                    <h3>Customer support</h3>
+                    <p>A natural fit for more open-ended agents because:</p>
+                    <ul>
+                        <li>Support interactions naturally follow a conversation flow</li>
+                        <li>Tools can pull customer data and order history</li>
+                        <li>Actions like issuing refunds can be handled programmatically</li>
+                        <li>Success can be clearly measured through user-defined resolutions</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="column">
+                <div class="definition-box">
+                    <h3>Coding agents</h3>
+                    <p>Particularly effective because:</p>
+                    <ul>
+                        <li>Code solutions are verifiable through automated tests</li>
+                        <li>Agents can iterate using test results as feedback</li>
+                        <li>The problem space is well-defined and structured</li>
+                        <li>Output quality can be measured objectively</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Appendix 2 - Prompt engineering your tools -->
+    <div class="slide active">
+        <h2>Appendix 2: Prompt engineering your tools</h2>
+        <p>No matter which agentic system you're building, tools will likely be an important part of your agent. Tool definitions and specifications should be given just as much prompt engineering attention as your overall prompts.</p>
+        
+        <div class="workflow-box">
+            <h3>Our suggestions for deciding on tool formats</h3>
+            <ul>
+                <li>Give the model enough tokens to "think" before it writes itself into a corner</li>
+                <li>Keep the format close to what the model has seen naturally occurring in text</li>
+                <li>Make sure there's no formatting "overhead" such as having to keep accurate counts</li>
+            </ul>
+        </div>
+        
+        <div class="workflow-box">
+            <h3>Creating good agent-computer interfaces (ACI)</h3>
+            <ul>
+                <li>Put yourself in the model's shoes - is it obvious how to use this tool?</li>
+                <li>Change parameter names or descriptions to make things more obvious</li>
+                <li>Test how the model uses your tools and iterate</li>
+                <li>Poka-yoke your tools - make them harder to use incorrectly</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+        <span class="slide-indicator" id="slideIndicator">15 / 15</span>
+        <button id="nextBtn" onclick="changeSlide(1)" disabled="">Next</button>
+        <button onclick="saveSlides()">Save</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('slideIndicator').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        function saveSlides() {
+            const slideContent = document.documentElement.outerHTML;
+            const blob = new Blob([slideContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'building-effective-agents.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+
+</body></html>

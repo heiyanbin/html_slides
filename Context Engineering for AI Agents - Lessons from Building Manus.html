@@ -1,0 +1,390 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Engineering for AI Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            background-color: white;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+        
+        .slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            color: #1a73e8;
+            line-height: 1.2;
+        }
+        
+        .slide h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #1a73e8;
+            line-height: 1.2;
+        }
+        
+        .slide h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4285f4;
+        }
+        
+        .slide p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+        
+        .slide ul {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-left: 30px;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+        
+        .slide li {
+            margin-bottom: 15px;
+        }
+        
+        .slide img {
+            max-width: 80%;
+            max-height: 400px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .highlight {
+            background-color: #e8f0fe;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1a73e8;
+            margin: 20px 0;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .nav-button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: #1557b0;
+        }
+        
+        .nav-button:disabled {
+            background-color: #dadce0;
+            cursor: not-allowed;
+        }
+        
+        .slide-indicator {
+            font-size: 14px;
+            color: #5f6368;
+        }
+        
+        .author {
+            font-size: 1.2rem;
+            color: #5f6368;
+            margin-bottom: 40px;
+        }
+        
+        .date {
+            font-size: 1rem;
+            color: #5f6368;
+            margin-bottom: 10px;
+        }
+        
+        .two-column {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        .column {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide">
+            <div class="date">2025/7/18</div>
+            <h1>Context Engineering for AI Agents</h1>
+            <div class="author">Yichao 'Peak' Ji</div>
+            <p>Lessons from building Manus - an AI agent framework that leverages in-context learning of frontier models</p>
+            <div class="highlight">
+                <p>"Context engineering is still an emerging science—but for agent systems, it's already essential."</p>
+            </div>
+        </div>
+        
+        <!-- Slide 2: Introduction -->
+        <div class="slide">
+            <h2>The Choice: End-to-End vs In-Context Learning</h2>
+            <p>At the beginning of the Manus project, we faced a key decision:</p>
+            <ul>
+                <li>Train an end-to-end agentic model using open-source foundations</li>
+                <li>Build an agent on top of the in-context learning abilities of frontier models</li>
+            </ul>
+            <div class="highlight">
+                <p>Our choice: Bet on context engineering</p>
+                <p>Why? Ship improvements in hours instead of weeks, and keep our product orthogonal to underlying models</p>
+            </div>
+            <p>We call our manual process of architecture searching, prompt fiddling, and empirical guesswork "Stochastic Graduate Descent"</p>
+        </div>
+        
+        <!-- Slide 3: Design Around the KV-Cache -->
+        <div class="slide">
+            <h2>Design Around the KV-Cache</h2>
+            <p><strong>The single most important metric</strong> for a production-stage AI agent: KV-cache hit rate</p>
+            <p>Why it matters:</p>
+            <ul>
+                <li>Directly affects latency and cost</li>
+                <li>Context grows with every step, output remains short</li>
+                <li>Average input-to-output token ratio: ~100:1</li>
+            </ul>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/OhdKxGRSXCcuqOvz.png" alt="KV-Cache illustration">
+            <p>Cached input tokens cost 0.30 USD/MTok vs 3 USD/MTok for uncached - a 10x difference!</p>
+        </div>
+        
+        <!-- Slide 4: KV-Cache Best Practices -->
+        <div class="slide">
+            <h2>Improving KV-Cache Hit Rate</h2>
+            <h3>Key Practices:</h3>
+            <ul>
+                <li><strong>Keep your prompt prefix stable</strong> - Even a single-token difference can invalidate the cache</li>
+                <li><strong>Make your context append-only</strong> - Avoid modifying previous actions or observations</li>
+                <li><strong>Mark cache breakpoints explicitly</strong> - When needed, account for potential cache expiration</li>
+            </ul>
+            <div class="highlight">
+                <p>Common mistake: Including a timestamp at the beginning of the system prompt kills your cache hit rate</p>
+            </div>
+            <p>If self-hosting models using frameworks like vLLM, ensure prefix/prompt caching is enabled</p>
+        </div>
+        
+        <!-- Slide 5: Mask, Don't Remove -->
+        <div class="slide">
+            <h2>Mask, Don't Remove</h2>
+            <p>As agents gain more capabilities, their action space grows more complex</p>
+            <p>Dynamic action spaces (like RAG-based tool loading) cause problems:</p>
+            <ul>
+                <li>Changes invalidate KV-cache for subsequent actions</li>
+                <li>Model gets confused when previous actions refer to undefined tools</li>
+            </ul>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/cWxINCvUfrmlbvfV.png" alt="Masking illustration">
+            <div class="highlight">
+                <p>Manus uses a context-aware state machine to manage tool availability by masking token logits during decoding</p>
+            </div>
+        </div>
+        
+        <!-- Slide 6: Function Calling Modes -->
+        <div class="slide">
+            <h2>Function Calling Modes</h2>
+            <p>We constrain action selection by masking token logits directly:</p>
+            <div class="two-column">
+                <div class="column">
+                    <h3>Auto</h3>
+                    <p>Model may choose to call a function or not</p>
+                    <p>Prefixed with: <code>&lt;|im_start|&gt;assistant</code></p>
+                </div>
+                <div class="column">
+                    <h3>Required</h3>
+                    <p>Model must call a function, unconstrained</p>
+                    <p>Prefixed with: <code>&lt;|im_start|&gt;assistant&lt;tool_call&gt;</code></p>
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>Specified</h3>
+                <p>Model must call a function from a specific subset</p>
+                <p>Prefixed with: <code>&lt;|im_start|&gt;assistant&lt;tool_call&gt;{"name": "browser_</code></p>
+            </div>
+            <p>Consistent tool prefixes (browser_, shell_) allow easy enforcement of tool groups</p>
+        </div>
+        
+        <!-- Slide 7: Use the File System as Context -->
+        <div class="slide">
+            <h2>Use the File System as Context</h2>
+            <p>Modern LLMs offer 128K+ token contexts, but in agentic scenarios:</p>
+            <ul>
+                <li>Observations can be huge (web pages, PDFs)</li>
+                <li>Model performance degrades beyond certain context lengths</li>
+                <li>Long inputs are expensive, even with prefix caching</li>
+            </ul>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/sBITCOxGnHNUPHTD.png" alt="File system as context">
+            <div class="highlight">
+                <p>Manus treats the file system as ultimate context: unlimited, persistent, and directly operable by the agent</p>
+            </div>
+            <p>Compression strategies are always designed to be restorable</p>
+        </div>
+        
+        <!-- Slide 8: Manipulate Attention Through Recitation -->
+        <div class="slide">
+            <h2>Manipulate Attention Through Recitation</h2>
+            <p>Manus creates and updates todo.md files during complex tasks</p>
+            <p>Why this matters:</p>
+            <ul>
+                <li>Typical tasks require ~50 tool calls - a long loop</li>
+                <li>Models can drift off-topic or forget earlier goals</li>
+            </ul>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/OYpTzfPZaBeeWFOx.png" alt="Todo list example">
+            <div class="highlight">
+                <p>By rewriting the todo list, Manus recites objectives into context end, pushing global plan into recent attention span</p>
+            </div>
+            <p>This avoids "lost-in-the-middle" issues and reduces goal misalignment</p>
+        </div>
+        
+        <!-- Slide 9: Keep the Wrong Stuff In -->
+        <div class="slide">
+            <h2>Keep the Wrong Stuff In</h2>
+            <p>Agents make mistakes - that's reality, not a bug</p>
+            <p>Common impulse: Hide errors, clean up traces, retry actions</p>
+            <p>Problem: Erasing failure removes evidence</p>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/dBjZlVbKJVhjgQuF.png" alt="Error handling illustration">
+            <div class="highlight">
+                <p>Most effective improvement: Leave wrong turns in context</p>
+                <p>When model sees failed action + observation, it implicitly updates internal beliefs</p>
+            </div>
+            <p>Error recovery is one of the clearest indicators of true agentic behavior</p>
+        </div>
+        
+        <!-- Slide 10: Don't Get Few-Shotted -->
+        <div class="slide">
+            <h2>Don't Get Few-Shotted</h2>
+            <p>Few-shot prompting can backfire in agent systems</p>
+            <p>Language models are excellent mimics - they imitate patterns in context</p>
+            <p>Danger in tasks with repetitive decisions:</p>
+            <ul>
+                <li>Agent falls into rhythm, repeating similar actions</li>
+                <li>Leads to drift, overgeneralization, or hallucination</li>
+            </ul>
+            <img src="https://d1oupeiobkpcny.cloudfront.net/user_upload_by_module/markdown/310708716691272617/IIyBBdwwuMDJUnUc.png" alt="Few-shot example">
+            <div class="highlight">
+                <p>Fix: Increase diversity with structured variation in actions and observations</p>
+                <p>The more uniform your context, the more brittle your agent becomes</p>
+            </div>
+        </div>
+        
+        <!-- Slide 11: Conclusion -->
+        <div class="slide active">
+            <h2>Conclusion</h2>
+            <p>Context engineering is still an emerging science—but for agent systems, it's already essential</p>
+            <p>How you shape the context ultimately defines how your agent behaves:</p>
+            <ul>
+                <li>How fast it runs</li>
+                <li>How well it recovers</li>
+                <li>How far it scales</li>
+            </ul>
+            <div class="highlight">
+                <p>"The agentic future will be built one context at a time. Engineer them well."</p>
+            </div>
+            <p>These patterns worked for us after repeated rewrites, dead ends, and real-world testing across millions of users</p>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+            <span class="slide-indicator"><span id="currentSlide">11</span> / <span id="totalSlides">11</span></span>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)" disabled="">Next</button>
+            <button class="nav-button" onclick="downloadSlides()">Download</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            showSlide(currentSlideIndex);
+        }
+        
+        function downloadSlides() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'context_engineering_slides.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+
+</body></html>
