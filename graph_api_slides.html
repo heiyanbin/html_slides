@@ -1,0 +1,376 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using the Graph API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .slide.active {
+            display: flex;
+        }
+        .slide-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .slide-content {
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .step-number {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: #2980b9;
+        }
+        .slide-counter {
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .bullet-list {
+            list-style-type: none;
+            margin-left: 20px;
+        }
+        .bullet-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+        .bullet-list li:before {
+            content: "•";
+            color: #3498db;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide">
+            <h1 class="slide-title">Using the Graph API</h1>
+            <div class="slide-content">
+                <p>Building an agent with LangGraph's Graph API involves several key steps:</p>
+                <ul class="bullet-list">
+                    <li>Define tools and model</li>
+                    <li>Define state structure</li>
+                    <li>Define model node</li>
+                    <li>Define tool node</li>
+                    <li>Define conditional logic</li>
+                    <li>Build and compile the agent</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: Step 0 - Define Tools and Model -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">0</span>Define Tools and Model</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    from langchain_core.tools import tool<br>
+                    from langchain.chat_models import init_chat_model<br><br>
+                    
+                    llm = init_chat_model(<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"anthropic:claude-3-7-sonnet-latest",<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;temperature=0<br>
+                    )<br><br>
+                    
+                    @tool<br>
+                    def multiply(a: int, b: int) -&gt; int:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""Multiply a and b."""<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return a * b<br><br>
+                    
+                    @tool<br>
+                    def add(a: int, b: int) -&gt; int:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""Adds a and b."""<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return a + b<br><br>
+                    
+                    @tool<br>
+                    def divide(a: int, b: int) -&gt; float:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""Divide a and b."""<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return a / b<br><br>
+                    
+                    tools = [add, multiply, divide]<br>
+                    llm_with_tools = llm.bind_tools(tools)
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Step 1 - Define State -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">1</span>Define State</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    from langchain_core.messages import AnyMessage<br>
+                    from typing_extensions import TypedDict, Annotated<br>
+                    import operator<br><br>
+                    
+                    class MessagesState(TypedDict):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;messages: Annotated[list[AnyMessage], operator.add]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;llm_calls: int
+                </div>
+                <p>The state defines the data structure that will be passed between nodes in the graph.</p>
+                <ul class="bullet-list">
+                    <li>messages: List of conversation messages</li>
+                    <li>llm_calls: Counter for tracking LLM invocations</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Step 2 - Define Model Node -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">2</span>Define Model Node</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    from langchain_core.messages import SystemMessage<br><br>
+                    
+                    def llm_call(state: dict):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""LLM decides whether to call a tool or not"""<br><br>
+                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;return {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"messages": [<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;llm_with_tools.invoke(<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SystemMessage(<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;content="You are a helpful assistant..."<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ state["messages"]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"llm_calls": state.get('llm_calls', 0) + 1<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Step 3 - Define Tool Node -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">3</span>Define Tool Node</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    from langchain_core.messages import ToolMessage<br><br>
+                    
+                    def tool_node(state: dict):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""Performs the tool call"""<br><br>
+                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;result = []<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for tool_call in state["messages"][-1].tool_calls:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tool = tools_by_name[tool_call["name"]]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;observation = tool.invoke(tool_call["args"])<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return {"messages": result}
+                </div>
+                <p>The tool node executes the tool calls requested by the LLM and returns the results.</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Step 4 - Define Conditional Logic -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">4</span>Define Conditional Logic</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    from typing import Literal<br>
+                    from langgraph.graph import StateGraph, START, END<br><br>
+                    
+                    def should_continue(state: MessagesState) -&gt; Literal["tool_node", END]:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"""Decide if we should continue the loop or stop"""<br><br>
+                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;messages = state["messages"]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;last_message = messages[-1]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if last_message.tool_calls:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "tool_node"<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return END
+                </div>
+                <p>This function determines whether to route to the tool node or end the conversation based on whether the LLM made a tool call.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Step 5 - Build Agent -->
+        <div class="slide">
+            <h1 class="slide-title"><span class="step-number">5</span>Build Agent</h1>
+            <div class="slide-content">
+                <div class="code-block">
+                    # Build workflow<br>
+                    agent_builder = StateGraph(MessagesState)<br><br>
+                    
+                    # Add nodes<br>
+                    agent_builder.add_node("llm_call", llm_call)<br>
+                    agent_builder.add_node("tool_node", tool_node)<br><br>
+                    
+                    # Add edges to connect nodes<br>
+                    agent_builder.add_edge(START, "llm_call")<br>
+                    agent_builder.add_conditional_edges(<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;"llm_call",<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;should_continue,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;["tool_node", END]<br>
+                    )<br>
+                    agent_builder.add_edge("tool_node", "llm_call")<br><br>
+                    
+                    # Compile the agent<br>
+                    agent = agent_builder.compile()
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Summary -->
+        <div class="slide active">
+            <h1 class="slide-title">Summary</h1>
+            <div class="slide-content">
+                <p>The Graph API provides a structured way to build agents by:</p>
+                <ul class="bullet-list">
+                    <li>Defining tools and models</li>
+                    <li>Creating a state structure to track conversation data</li>
+                    <li>Implementing nodes for LLM calls and tool execution</li>
+                    <li>Adding conditional logic to control the flow</li>
+                    <li>Connecting nodes with edges to form a complete workflow</li>
+                </ul>
+                <p style="margin-top: 30px;">This approach creates a flexible agent that can handle complex conversations with tool usage.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn">Previous</button>
+        <button class="nav-button" id="nextBtn" disabled="">Next</button>
+        <button class="nav-button" id="saveBtn">Save</button>
+        <div class="slide-counter">
+            <span id="currentSlide">8</span> / <span id="totalSlides">8</span>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const slides = document.querySelectorAll('.slide');
+        const currentSlideElement = document.getElementById('currentSlide');
+        const totalSlidesElement = document.getElementById('totalSlides');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        
+        let currentSlide = 0;
+        totalSlidesElement.textContent = slides.length;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlideElement.textContent = index + 1;
+            
+            // Disable/enable buttons as needed
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === slides.length - 1;
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        });
+        
+        saveBtn.addEventListener('click', () => {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'graph_api_slides.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        });
+    </script>
+
+</body></html>
