@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能体工厂：特征与组成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0;
+        }
+
+        .slide {
+            width: 96vw;
+            height: 92vh;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px 50px;
+            display: none;
+            overflow-y: auto;
+            position: relative;
+            margin: 20px;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 14px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 5px 15px;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 56px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 42px;
+            color: #34495e;
+            margin-bottom: 35px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: 32px;
+            color: #5a6c7d;
+            margin-bottom: 20px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #7f8c8d;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .content-section {
+            margin-bottom: 35px;
+        }
+
+        .definition-box {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 25px 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 18px;
+            padding-left: 35px;
+            position: relative;
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .feature-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .sub-feature {
+            margin-left: 35px;
+            margin-top: 12px;
+        }
+
+        .sub-feature li::before {
+            content: "•";
+            color: #95a5a6;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 25px 0;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .comparison-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .architecture-image {
+            width: 100%;
+            height: 75vh;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 20px;
+            margin-top: 25px;
+        }
+
+        .agent-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .agent-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .agent-card h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+
+        .agent-card p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .value-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .value-card h4 {
+            margin-bottom: 18px;
+            font-size: 24px;
+        }
+
+        .value-card ul {
+            list-style: none;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .value-card li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .value-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-size: 18px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #667eea;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:disabled:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            transform: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            width: 100%;
+            z-index: 100;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .emoji {
+            font-size: 28px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* 滚动条样式 */
+        .slide::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .slide::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="slide-container">
+        <!-- 幻灯片 1 -->
+        <div class="slide active">
+            <div class="slide-number">1/10</div>
+            <h1>智能体工厂</h1>
+            <div class="subtitle">引领智能制造新范式</div>
+            <div style="margin-top: 80px; text-align: center; height: 50vh; display: flex; align-items: center; justify-content: center;">
+                <div style="font-size: 200px; opacity: 0.8; position: absolute;">
+                    <img width=400 src="https://imgcdn.yicai.com/uppics/images/2025/08/1429e4ef5a44e83bba2a4fa293bc2e3f.jpg">
+                    <img width=400 src="https://cn-res.midea.com/content/dam/mideacn-aem/%E7%BE%8E%E7%9A%84%E6%96%B0%E9%97%BB/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87-2025-08-28-090141-466.jpg">
+                    <img width=400 src="https://cn-res.midea.com/content/dam/mideacn-aem/%E7%BE%8E%E7%9A%84%E6%96%B0%E9%97%BB/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87-2025-08-28-090147-036.jpg">
+                    <img width=400 src="https://cn-res.midea.com/content/dam/mideacn-aem/%E7%BE%8E%E7%9A%84%E6%96%B0%E9%97%BB/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87-2025-08-28-090130-570.jpg">
+                    <img width=400 src="https://cn-res.midea.com/content/dam/mideacn-aem/%E7%BE%8E%E7%9A%84%E6%96%B0%E9%97%BB/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87-2025-08-28-090135-967.jpg">
+                    <img width=400 src="https://cn-res.midea.com/content/dam/mideacn-aem/%E7%BE%8E%E7%9A%84%E6%96%B0%E9%97%BB/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87-2025-08-28-090125-472.jpg">
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片 2 -->
+        <div class="slide">
+            <div class="slide-number">2/10</div>
+            <h2>什么是智能体工厂？</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">📝</span>定义</h3>
+                <div class="definition-box">
+                    <p>智能体工厂是一种由"工厂大脑"运营，通过机器人和大规模模型（大模型）进行自动调度和自主决策的工厂。</p>
+                    <p style="margin-top: 15px;">它具备近乎"思考"与"进化"的能力，超越了传统数字化工厂执行既定流程的限制。</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">💡</span>核心理念</h3>
+                <ul class="feature-list">
+                    <li>将工厂中的每一个关键元素——包括移动的机器人、工作的设备、巡检人员、感知传感器等——都赋予感知、理解、决策甚至行动的能力，使其成为<span class="highlight">"智能体"</span>。</li>
+                    <li>目标是建立一个<span class="highlight">高效、灵活、韧性</span>的智能生态系统，以重构生产逻辑。</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 幻灯片 3 -->
+        <div class="slide">
+            <div class="slide-number">3/10</div>
+            <h2>智能体工厂与数字化工厂的区别</h2>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>对比维度</th>
+                    <th>数字化工厂</th>
+                    <th>智能体工厂</th>
+                </tr>
+                <tr>
+                    <td><strong>核心能力差异</strong></td>
+                    <td>侧重于执行既定流程和信息互联</td>
+                    <td>最大特点是机器人与大模型之间的<span class="highlight">自动调度和自主决策</span>，表现出一种近乎"思考"与"进化"的能力</td>
+                </tr>
+                <tr>
+                    <td><strong>演进路径</strong></td>
+                    <td>当前形态</td>
+                    <td>生产制造的未来形态，是从<span class="highlight">"数字化工厂"演进为"自主进化型智能体生态"</span></td>
+                </tr>
+                <tr>
+                    <td><strong>运行机制</strong></td>
+                    <td>通常是写好规则，机器人按规则来操作；一个程序只能打一个螺丝，换机型需手动调度</td>
+                    <td>智能体是"活的"，能跟人一样思考，机器人可以同时做几件事。它通过<span class="highlight">数据而非规则驱动</span>智能体之间的灵活调度和机型切换</td>
+                </tr>
+                <tr>
+                    <td><strong>智能水平</strong></td>
+                    <td>基于预设规则运行</td>
+                    <td>通过<span class="highlight">30亿数据训练工业大脑</span>，具备自我进化和优化能力，例如优化质量检测并为产品设计提供洞察</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 幻灯片 4 -->
+        <div class="slide">
+            <div class="slide-number">4/10</div>
+            <h2>智能体工厂的核心特征</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">🧠</span>自主决策与自我进化能力</h3>
+                <ul class="feature-list">
+                    <li>工厂中的机器人和AI大模型能够进行<span class="highlight">自动调度和自主决策</span></li>
+                    <li>工厂大脑通过持续收集、分析和总结数据，实现<span class="highlight">自我进化和优化</span></li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🌐</span>全要素互联互通</h3>
+                <ul class="feature-list">
+                    <li>借助先进技术（如5G全连接），实现<span class="highlight">人、机、料、法、环</span>五大生产要素的全面互联互通</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🤝</span>分布式多智能体架构</h3>
+                <ul class="feature-list">
+                    <li>工厂采用分布式架构，通过<span class="highlight">Agent-to-Agent (A2A) 通信协议</span>实现多个智能体之间的高效自治协同</li>
+                    <li>智能体之间形成一个分布式的智能决策网络，共同完成复杂的生产任务</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">📈</span>顶层规划与底层涌现叠加</h3>
+                <ul class="feature-list">
+                    <li>工厂的智能化转型既包含整体的顶层规划和系统设计，也鼓励一线员工在开放平台上<span class="highlight">自主创新和开发智能体</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 幻灯片 5 -->
+        <div class="slide">
+            <div class="slide-number">5/10</div>
+            <h2>智能体工厂架构</h2>
+            <div class="">
+                <div style="text-align: center;">
+                    <p style="font-size: 18px; margin-top: 0px; opacity: 0.7;"><img style="max-height: 720px; width: auto;" src="https://heiyanbin.github.io/html_slides/images/agent_factory.png"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 幻灯片 6 -->
+        <div class="slide">
+            <div class="slide-number">6/10</div>
+            <h2>智能体工厂的组成 - 工厂大脑</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">🎯</span>定位：智能体的"神经中枢"</h3>
+                <ul class="feature-list">
+                    <li>工厂大脑是智能体工厂的<span class="highlight">核心</span>，负责任务调度、指挥与协调整个智能体系统</li>
+                    <li>它整合了工厂的制造经验、大模型技术与具身机器人技术</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">⚙️</span>技术架构</h3>
+                <ul class="feature-list">
+                    <li>采用<span class="highlight">高可用、可扩展的分布式多智能体架构</span></li>
+                    <li>集成工业领域大模型推理引擎，以增强智能决策能力</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">📊</span>数据驱动</h3>
+                <ul class="feature-list">
+                    <li>基于<span class="highlight">海量工业数据（例如30亿条工业数据）</span>进行训练，为智能体的自主决策提供支撑，并持续实现自我进化</li>
+                    <li>能够实时联动数据，将人工操作的小时级响应变为<span class="highlight">秒级响应</span></li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🚀</span>核心功能</h3>
+                <ul class="feature-list">
+                    <li>实现全场景智能体协同，提升核心业务场景的效率</li>
+                    <li>负责智能体之间的灵活调度和机型切换，从<span class="highlight">规则驱动转向数据驱动</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 幻灯片 7 -->
+        <div class="slide">
+            <div class="slide-number">7/10</div>
+            <h2>智能体工厂的组成 - 智能体</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">🧩</span>定位：面向特定任务的神经网络</h3>
+                <ul class="feature-list">
+                    <li>如果工厂大脑是中枢，那么智能体就是<span class="highlight">面向特定任务的神经网络</span></li>
+                    <li>它们是工厂中被赋予了感知、理解、决策及行动能力的生产要素</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">⚡</span>功能特点</h3>
+                <ul class="feature-list">
+                    <li>具备<span class="highlight">自主服务与协同能力</span>，能够根据指令和环境变化进行自我调整</li>
+                    <li>能够端到端地完成从感知、决策、执行、反馈到持续优化的全流程</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🔧</span>智能体类型</h3>
+                <div class="agent-types">
+                    <div class="agent-card">
+                        <h4>品质智能体</h4>
+                        <p>负责质量检测和反馈</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>设备管理智能体（TPM）</h4>
+                        <p>负责设备维护、保养和故障预警</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>安全智能体（EHS）</h4>
+                        <p>负责环境、职业健康与安全巡检</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>计划智能体</h4>
+                        <p>负责生产排程和进度跟踪</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>物流智能体</h4>
+                        <p>负责物料运输和调度</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>工艺智能体</h4>
+                        <p>负责工艺优化和调整</p>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; text-align: center; font-size: 20px; color: #666;">
+                    <span class="highlight">14个智能体</span>在工厂大脑的指挥下深度协同，共同覆盖和满足<span class="highlight">38个核心生产业务场景</span>的需求
+                </p>
+            </div>
+        </div>
+
+        <!-- 幻灯片 8 -->
+        <div class="slide">
+            <div class="slide-number">8/10</div>
+            <h2>智能体工厂的组成 - 具身智能终端</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">🦾</span>定位：实际任务执行者</h3>
+                <ul class="feature-list">
+                    <li>具身智能终端是智能体系统的"四肢"，负责<span class="highlight">实际任务的物理执行</span></li>
+                    <li>它们通过多模态感知技术和具身智能操作技术，实现数字世界到物理世界的闭环</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🤖</span>主要组成部分</h3>
+                <div class="agent-types">
+                    <div class="agent-card">
+                        <h4>人形机器人</h4>
+                        <p>如"美罗"，具备多功能（搬运、质检、消防、设备监测、保养等），能够实现"多模态感知+自主决策"</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>AI巡检机器人</h4>
+                        <p>如"玉兔"，24小时不间断巡检，自动识别问题并呼叫工程师，提升巡检频次和准确率</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>AMR物流机器人</h4>
+                        <p>在产线和机器人之间运送物料，确保生产流畅，具备动态路径感知、避障等能力</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>协作机器人</h4>
+                        <p>与人类员工协同工作，完成精细化任务，如自动锁附螺丝，具备柔性化作业能力</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>AI眼镜</h4>
+                        <p>辅助工人进行维修、作业指导，实时采集分析数据并进行提醒纠错</p>
+                    </div>
+                    <div class="agent-card">
+                        <h4>传感器、摄像头等</h4>
+                        <p>作为感知单元，实时采集环境和设备数据，汇报给工厂大脑</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🔄</span>协同运作</h3>
+                <ul class="feature-list">
+                    <li>在工厂大脑的统一调度下，具身智能终端与各类智能体<span class="highlight">深度协同</span>，高效执行各项任务</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 幻灯片 9 -->
+        <div class="slide">
+            <div class="slide-number">9/10</div>
+            <h2>智能体工厂的运行机制</h2>
+            
+            <div class="content-section">
+                <h3><span class="emoji">🏛️</span>顶层规划与底层涌现的融合</h3>
+                <ul class="feature-list">
+                    <li>工厂建设遵循<span class="highlight">全球灯塔工厂标准</span>进行整体规划和数字化基础设施投资</li>
+                    <li>同时，鼓励一线员工在开放平台上自主摸索、开发智能体，平均每周产生<span class="highlight">100多个创新智能体</span></li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🌊</span>数据流与决策流驱动</h3>
+                <ul class="feature-list">
+                    <li>上千传感器和机器人实时收集信息，与工厂大脑进行交互</li>
+                    <li>工厂大脑基于这些数据进行分析、决策和调度，智能体和具身终端执行任务，并将结果反馈回系统，形成<span class="highlight">完整闭环</span></li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🔄</span>从规则驱动到数据驱动</h3>
+                <ul class="feature-list">
+                    <li>不同于传统工厂预设固定规则，智能体工厂通过<span class="highlight">数据而非规则驱动</span>智能体之间的灵活调度和机型切换</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🚫</span>全流程无人化与闭环管理</h3>
+                <ul class="feature-list">
+                    <li>智能体协同作业，实现包括巡查、日常会议、设备维护、质量检测、物料运输等多个核心业务场景的<span class="highlight">全流程无人化</span></li>
+                    <li>异常发现到处理能够进入<span class="highlight">秒级时代</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 幻灯片 10 -->
+        <div class="slide">
+            <div class="slide-number">10/10</div>
+            <h2>智能体工厂带来的价值与未来展望</h2>
+            
+            <div class="value-grid">
+                <div class="value-card">
+                    <h4><span class="emoji">📈</span>效率显著提升</h4>
+                    <ul>
+                        <li>平均生产效率提升超80%</li>
+                        <li>关键生产环节实现100%防错</li>
+                        <li>巡查效率可提升80%-90%</li>
+                        <li>核心业务场景效率提升50%以上</li>
+                    </ul>
+                </div>
+                <div class="value-card">
+                    <h4><span class="emoji">🎯</span>质量管控优化</h4>
+                    <ul>
+                        <li>通过AI视觉、AI算法把控品质</li>
+                        <li>降低误检和漏检率</li>
+                        <li>产品生产关键环节可实现100%的防乱防错</li>
+                    </ul>
+                </div>
+                <div class="value-card">
+                    <h4><span class="emoji">🔧</span>柔性化生产能力</h4>
+                    <ul>
+                        <li>实现不同产品型号的混流生产</li>
+                        <li>能快速自动切换生产程序</li>
+                        <li>提升生产的精准度和效率</li>
+                    </ul>
+                </div>
+                <div class="value-card">
+                    <h4><span class="emoji">💰</span>运营成本降低</h4>
+                    <ul>
+                        <li>通过AIGC等技术降低运营成本</li>
+                        <li>2025年上半年已降低约2.8亿元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content-section" style="margin-top: 35px;">
+                <h3><span class="emoji">👥</span>员工角色转型升级</h3>
+                <ul class="feature-list">
+                    <li>流水线重复劳动人员逐步减少</li>
+                    <li>员工将转型为<span class="highlight">机器人运维数据分析人员、运维工匠、数字工匠、AI训练师</span>等更高价值和技能导向的角色</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3><span class="emoji">🔮</span>未来展望</h3>
+                <ul class="feature-list">
+                    <li><strong>持续进化：</strong>进一步扩大智能体覆盖场景，提升工厂大脑智能，增加具身智能终端种类</li>
+                    <li><strong>复制推广：</strong>将成功模式逐步推广到全球范围内的其他工厂</li>
+                    <li><strong>行业标准定义者：</strong>智能体工厂模式有望定义生产制造的未来形态，引领全球制造业从"跟随"到"定义"智能制造标准的<span class="highlight">重大跃迁</span>，提供可复用的新范式</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousSlide()">
+            <span>←</span> 上一页
+        </button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+            下一页 <span>→</span>
+        </button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            // 更新进度条
+            const progress = ((index + 1) / totalSlides) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // 更新按钮状态
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') previousSlide();
+        });
+
+        // 初始化
+        showSlide(0);
+    </script>
+</body>
+</html>
