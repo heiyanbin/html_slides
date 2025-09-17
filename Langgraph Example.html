@@ -256,9 +256,9 @@
             </div>
         </div>
 
-        <!-- Slide 7: Step 5 - Build Agent -->
+        <!-- Slide 7: Step 5 - Build And Invoke Agent -->
         <div class="slide">
-            <h1 class="slide-title"><span class="step-number">5</span>Build Agent</h1>
+            <h1 class="slide-title"><span class="step-number">5</span>Build And Invoke Agent</h1>
             <div class="slide-content">
                 <div class="code-block">
                     # Build workflow<br>
@@ -278,7 +278,12 @@
                     agent_builder.add_edge("tool_node", "llm_call")<br><br>
                     
                     # Compile the agent<br>
-                    agent = agent_builder.compile()
+                    agent = agent_builder.compile()<br><br>
+
+                    # Invoke the agent<br>
+                    messages = agent.invoke({"messages":[HumanMessage(content="Add 3 and 4.")]})<br>
+                    for m in messages["messages"]:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;m.pretty_print()<br>
                 </div>
             </div>
         </div>
