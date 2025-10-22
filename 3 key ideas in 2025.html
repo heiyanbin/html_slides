@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jason Wei on 3 Key Ideas in AI in 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            display: none;
+            overflow-y: auto;
+            background-color: white;
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide-header {
+            margin-bottom: 40px;
+        }
+        
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+        
+        .slide-subtitle {
+            font-size: 24px;
+            font-weight: 500;
+            color: #5f6368;
+        }
+        
+        .slide-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slide-footer {
+            margin-top: 40px;
+            font-size: 16px;
+            color: #5f6368;
+            font-style: italic;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .nav-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            background-color: #1765cc;
+            transform: scale(1.05);
+        }
+        
+        .nav-button:disabled {
+            background-color: #c1c1c1;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 16px;
+            color: #5f6368;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .content-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 15px;
+        }
+        
+        .section-content {
+            font-size: 20px;
+            line-height: 1.5;
+        }
+        
+        ul, ol {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            font-size: 20px;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            background-color: #e8f0fe;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .big-number {
+            font-size: 64px;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-right: 15px;
+            line-height: 1;
+        }
+        
+        .key-idea {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        
+        .key-idea-content {
+            flex: 1;
+        }
+        
+        .key-idea-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 18px;
+        }
+        
+        th {
+            background-color: #f1f3f4;
+            font-weight: 600;
+        }
+        
+        .speaker-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .speaker-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #e8f0fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 30px;
+            font-size: 60px;
+            color: #1a73e8;
+        }
+        
+        .speaker-info {
+            flex: 1;
+        }
+        
+        .speaker-name {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .speaker-title {
+            font-size: 20px;
+            color: #5f6368;
+            margin-bottom: 15px;
+        }
+        
+        .speaker-bio {
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .two-column {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .column {
+            flex: 1;
+        }
+        
+        .jagged-edge-graph {
+            height: 300px;
+            background-color: #f1f3f4;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .graph-bar {
+            flex: 1;
+            margin: 0 5px;
+            background-color: #1a73e8;
+            position: relative;
+        }
+        
+        .graph-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 14px;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1 class="slide-title">Jason Wei on 3 Key Ideas in AI in 2025</h1>
+                <h2 class="slide-subtitle">Navigating the Future of Artificial Intelligence</h2>
+            </div>
+            <div class="slide-content">
+                <div class="speaker-profile">
+                    <div class="speaker-image">JW</div>
+                    <div class="speaker-info">
+                        <h3 class="speaker-name">Jason Wei</h3>
+                        <p class="speaker-title">Research Scientist at Meta Super Intelligence Labs</p>
+                        <p class="speaker-bio">Previously at OpenAI (co-creator of Q* and deep research) and Google Brain. Popularized Chain-of-Thought prompting and instruction tuning. Over 90,000 citations.</p>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <h3 class="section-title">Executive Summary</h3>
+                    <p class="section-content">This presentation synthesizes Jason Wei's analysis of three fundamental ideas that predict the trajectory and impact of AI development in 2025.</p>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 2: Overview of Three Key Ideas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Three Key Ideas in AI in 2025</h1>
+            </div>
+            <div class="slide-content">
+                <div class="key-idea">
+                    <div class="big-number">1</div>
+                    <div class="key-idea-content">
+                        <h3 class="key-idea-title">Intelligence as a Commodity</h3>
+                        <p class="section-content">AI capabilities are becoming ubiquitous and inexpensive, with costs driven toward zero through adaptive compute.</p>
+                    </div>
+                </div>
+                
+                <div class="key-idea">
+                    <div class="big-number">2</div>
+                    <div class="key-idea-content">
+                        <h3 class="key-idea-title">Verifier's Law</h3>
+                        <p class="section-content">AI progress on any task is directly proportional to how easily a correct solution can be verified.</p>
+                    </div>
+                </div>
+                
+                <div class="key-idea">
+                    <div class="big-number">3</div>
+                    <div class="key-idea-content">
+                        <h3 class="key-idea-title">The Jagged Edge of Intelligence</h3>
+                        <p class="section-content">AI capabilities are not uniform and will advance unevenly, creating peaks of superhuman performance and valleys of surprising incompetence.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 3: Intelligence as a Commodity -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Intelligence as a Commodity</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Key Concept</h3>
+                    <p class="section-content">Intelligence and knowledge are becoming ubiquitous and inexpensive, with their cost and access time being driven toward zero.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Two Stages of AI Progress</h3>
+                    <div class="two-column">
+                        <div class="column">
+                            <h4 style="font-size: 22px; margin-bottom: 10px; color: #1a73e8;">Stage 1: Pushing the Frontier</h4>
+                            <p class="section-content">Unlocking a new capability that AI could not previously perform well. Progress is gradual, as seen in the steady improvement on benchmarks like MMLU.</p>
+                        </div>
+                        <div class="column">
+                            <h4 style="font-size: 22px; margin-bottom: 10px; color: #1a73e8;">Stage 2: Commoditization</h4>
+                            <p class="section-content">Once an ability is achieved, the cost to access that level of intelligence rapidly decreases. For a given performance level on MMLU, the cost in dollars has fallen each year.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Adaptive Compute</h3>
+                    <p class="section-content">A key driver of commoditization is adaptive compute, which allows for varying the amount of compute based on the task. An easy task can be solved with minimal compute, making intelligence cheaper without constantly needing to scale up model size.</p>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 4: Information Retrieval Evolution -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">The Evolution of Information Retrieval</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Decreasing Time to Access Information</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Information Retrieval Task</th>
+                                    <th>Pre-Internet Era</th>
+                                    <th>Internet Era</th>
+                                    <th>Chatbot Era</th>
+                                    <th>Agents Era</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Find the population of Busan in 1983.</td>
+                                    <td>Hours</td>
+                                    <td>Minutes</td>
+                                    <td>Instant</td>
+                                    <td>Instant</td>
+                                </tr>
+                                <tr>
+                                    <td>Find how many couples got married in Busan in 1983.</td>
+                                    <td>Days/Weeks</td>
+                                    <td>Hours</td>
+                                    <td>Minutes</td>
+                                    <td>Minutes</td>
+                                </tr>
+                                <tr>
+                                    <td>Of the 30 most populated Asian cities in 1983, sort them by the number of marriages that year.</td>
+                                    <td>Weeks/Months</td>
+                                    <td>Days</td>
+                                    <td>Hours</td>
+                                    <td>Hours</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Real-World Example</h3>
+                    <p class="section-content">The OpenAI operator model successfully found the number of marriages in Busan in 1983 by navigating the Korean Kosis database—a task that GPT-3 was unable to perform.</p>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 5: Implications of Intelligence as a Commodity -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Implications of Intelligence as a Commodity</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Key Implications</h3>
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">1</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Democratization of Fields</h3>
+                            <p class="section-content">Fields historically gated by access to knowledge, such as coding and personal health ("biohacking"), will become more accessible.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">2</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Increased Value of Private Information</h3>
+                            <p class="section-content">As public information becomes a free commodity, the relative value of private or insider information (e.g., houses available for sale off-market) will increase significantly.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">3</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Frictionless Access to Information</h3>
+                            <p class="section-content">The future points toward a "personalized internet" where information is retrieved and presented to the user instantly and without friction.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 6: Verifier's Law -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Verifier's Law: The Power of Measurement</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Key Concept</h3>
+                    <p class="section-content">The <span class="highlight">asymmetry of verification</span> is a concept where it is significantly easier to verify a solution than to generate it. This leads to Verifier's Law: The ability to train AI to solve a task is proportional to how easily verifiable the task is.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Examples of Verification Asymmetry</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Generation Difficulty</th>
+                                    <th>Verification Difficulty</th>
+                                    <th>Asymmetry Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sudoku Puzzle</td>
+                                    <td>Medium to Hard</td>
+                                    <td>Easy</td>
+                                    <td>Trivial to check if numbers in each row, column, and box are correct</td>
+                                </tr>
+                                <tr>
+                                    <td>Code to Run Twitter</td>
+                                    <td>Very Hard</td>
+                                    <td>Easy</td>
+                                    <td>Takes thousands to build, but one can verify by using the website</td>
+                                </tr>
+                                <tr>
+                                    <td>Writing a Factual Essay</td>
+                                    <td>Easy</td>
+                                    <td>Very Hard</td>
+                                    <td>Easy to generate "feasibly true" claims, but fact-checking is tedious</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 7: Factors of Verifiability -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Five Key Factors of Verifiability</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <p class="section-content">Verifiability is a function of five key factors that determine how easily AI can be trained to solve a task:</p>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">1</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Objective Truth</h3>
+                            <p class="section-content">There is a clear definition of a good versus a bad response.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">2</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Speed</h3>
+                            <p class="section-content">Verification is fast.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">3</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Scalability</h3>
+                            <p class="section-content">It's possible to verify millions of proposed solutions at once.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">4</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Low Noise</h3>
+                            <p class="section-content">The verification process yields the same result every time.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">5</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Continuous Reward</h3>
+                            <p class="section-content">The quality of a response can be graded on a spectrum, not just as pass/fail.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 8: AlphaEvolve Example -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">AlphaEvolve: Leveraging Verifiability</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Case Study</h3>
+                    <p class="section-content">DeepMind's AlphaEvolve is a prime example of leveraging the principle of verifiability. By selecting tasks with high verifiability (e.g., finding the optimal placement of hexagons), the system uses an evolutionary algorithm.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">How It Works</h3>
+                    <ol>
+                        <li>Samples many candidate solutions from an LLM</li>
+                        <li>Grades them using the objective verification method</li>
+                        <li>Feeds the best solutions back to the model as inspiration for the next round</li>
+                    </ol>
+                    <p class="section-content">This approach sidesteps traditional generalization problems by focusing compute on finding the single best answer to a specific problem where the training and testing domains are identical.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Implications</h3>
+                    <ul>
+                        <li>The first tasks to be fully automated will be those that are trivial to verify.</li>
+                        <li>A significant emerging opportunity is to develop novel ways to measure things, which can then be optimized by AI.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 9: The Jagged Edge of Intelligence -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">The Jagged Edge of Intelligence</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Key Concept</h3>
+                    <p class="section-content">AI capabilities are not uniform and will not advance monolithically. Instead, progress will be uneven, creating a "jagged edge" with peaks of superhuman performance and valleys of surprising incompetence.</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Peaks and Valleys</h3>
+                    <div class="two-column">
+                        <div class="column">
+                            <h4 style="font-size: 22px; margin-bottom: 10px; color: #1a73e8;">Peaks</h4>
+                            <p class="section-content">Tasks where AI performs exceptionally well, such as hard math problems and some forms of competitive coding.</p>
+                        </div>
+                        <div class="column">
+                            <h4 style="font-size: 22px; margin-bottom: 10px; color: #1a73e8;">Valleys</h4>
+                            <p class="section-content">Tasks where AI struggles with seemingly simple concepts (e.g., historically claiming 9.11 is greater than 9.9) or lacks the data to perform (e.g., speaking rare languages).</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Implication for "Fast Takeoff"</h3>
+                    <p class="section-content">A sudden, "fast takeoff" of superintelligence is unlikely because AI self-improvement is not a binary switch but a gradual spectrum of capabilities that will develop unevenly across different tasks.</p>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 10: Heuristics for AI Improvement -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Heuristics for Predicting AI's Rate of Improvement</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <p class="section-content">The rate of AI improvement is not uniform; it varies per task. Here are the key heuristics for predicting how quickly AI will improve at a given task:</p>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">1</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Digital Tasks</h3>
+                            <p class="section-content">AI progresses much faster on digital tasks due to near-infinite and rapid iteration speed. Physical tasks involving robotics are slower.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">2</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Human Difficulty</h3>
+                            <p class="section-content">Tasks that are easier for humans tend to be easier for AI.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">3</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Data Abundance</h3>
+                            <p class="section-content">AI thrives where data is abundant. Performance on math problems, for instance, correlates directly with the frequency of a language in the training data.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">4</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Objective Metrics as an Exception</h3>
+                            <p class="section-content">A clear evaluation metric can serve as a reward signal, allowing AI to generate its own synthetic data through reinforcement learning and rapidly solve a benchmark even without pre-existing data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 11: AI Impact on Professions -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Predicting AI's Impact on Various Professions</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Human Difficulty</th>
+                                    <th>Digital</th>
+                                    <th>Easy to Get Data</th>
+                                    <th>Likelihood of AI Success</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Translation (Top 50 Languages)</td>
+                                    <td>Easy</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                    <td>Already Done</td>
+                                </tr>
+                                <tr>
+                                    <td>Debugging Basic Code</td>
+                                    <td>Medium</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                    <td>Done (2023)</td>
+                                </tr>
+                                <tr>
+                                    <td>Competition Math</td>
+                                    <td>Hard</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                    <td>Done (2024)</td>
+                                </tr>
+                                <tr>
+                                    <td>Conducting AI Research</td>
+                                    <td>Hard</td>
+                                    <td>Yes</td>
+                                    <td>No</td>
+                                    <td>Near Future (e.g., 2027)</td>
+                                </tr>
+                                <tr>
+                                    <td>Making a Movie</td>
+                                    <td>Very Hard</td>
+                                    <td>Yes</td>
+                                    <td>Yes</td>
+                                    <td>Medium Future (e.g., 2029)</td>
+                                </tr>
+                                <tr>
+                                    <td>Fixing Your Plumbing</td>
+                                    <td>Medium</td>
+                                    <td>No</td>
+                                    <td>Unsure</td>
+                                    <td>Unlikely Soon</td>
+                                </tr>
+                                <tr>
+                                    <td>Hairdressing</td>
+                                    <td>Medium</td>
+                                    <td>No</td>
+                                    <td>Unsure</td>
+                                    <td>Unlikely Soon</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+        
+        <!-- Slide 12: Conclusion -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">Conclusion: The Future of AI in 2025</h1>
+            </div>
+            <div class="slide-content">
+                <div class="content-section">
+                    <h3 class="section-title">Key Takeaways</h3>
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">1</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Intelligence as a Commodity</h3>
+                            <p class="section-content">As AI capabilities become ubiquitous and inexpensive, we'll see democratization of knowledge-based fields and increased value of private information.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">2</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">Verifier's Law</h3>
+                            <p class="section-content">Tasks that are easily verifiable will be the first to be automated, creating opportunities for businesses that develop novel measurement methods.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="key-idea">
+                        <div class="big-number" style="font-size: 48px;">3</div>
+                        <div class="key-idea-content">
+                            <h3 class="key-idea-title" style="font-size: 24px;">The Jagged Edge</h3>
+                            <p class="section-content">AI progress will be uneven, with digital, data-rich, and human-easy tasks advancing fastest, while physical and nuanced human-interaction tasks remain largely untouched.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <h3 class="section-title">Final Thought</h3>
+                    <p class="section-content">The future of AI is not a uniform "takeoff" but a complex landscape of rapid advancement in some areas and slow progress in others. Understanding these three key ideas provides a framework for navigating the evolving AI ecosystem in 2025 and beyond.</p>
+                </div>
+            </div>
+            <div class="slide-footer">Based on Jason Wei's briefing document</div>
+        </div>
+    </div>
+    
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">❮</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">❯</button>
+    </div>
+    
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+    
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            
+            if (currentSlideIndex < 0) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex >= totalSlides) {
+                currentSlideIndex = totalSlides - 1;
+            }
+            
+            showSlide(currentSlideIndex);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize the first slide
+        showSlide(currentSlideIndex);
+    </script>
+</body>
+</html>

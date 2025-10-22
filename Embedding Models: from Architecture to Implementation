@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding Models: from Architecture to Implementation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            padding: 40px;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a73e8;
+        }
+        .slide-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        .slide-content ul {
+            padding-left: 25px;
+        }
+        .slide-content li {
+            margin-bottom: 10px;
+        }
+        .slide-content p {
+            margin-bottom: 15px;
+        }
+        .slide-content h2 {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            color: #1a73e8;
+        }
+        .slide-content h3 {
+            font-size: 1.5rem;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #1a73e8;
+        }
+        .slide-content img {
+            max-width: 80%;
+            max-height: 40vh;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .controls button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .controls button:hover {
+            background-color: #0d62c9;
+        }
+        .slide-counter {
+            font-size: 14px;
+            color: #333;
+        }
+        .code-block {
+            background-color: #f1f3f4;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .highlight {
+            background-color: #fff8e1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title Slide -->
+    <div class="slide active">
+        <div class="slide-title">Embedding Models: from Architecture to Implementation</div>
+        <div class="slide-content">
+            <p>Welcome to Embedding Models: from Architecture to Implementation.</p>
+            <p>Built in partnership with Vectara</p>
+            <ul>
+                <li>Embedding models create the embedding vectors that make it possible to build semantic or meaning-based retrieval systems.</li>
+                <li>This course will describe their history, detailed technical architecture, and implementation.</li>
+                <li>This is a technical course focusing on building blocks rather than applications.</li>
+            </ul>
+            <p>You may have heard of Embedding Vectors being used in Generative AI applications. These vectors have an amazing ability to capture the meaning of a word or phrase.</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Introduction to Embedding Models -->
+    <div class="slide">
+        <div class="slide-title">Introduction to Embedding Models</div>
+        <div class="slide-content">
+            <p>In this lesson, you will learn:</p>
+            <ul>
+                <li>What vector embeddings are</li>
+                <li>Their main applications in natural language processing</li>
+                <li>From token embeddings to sentence embeddings</li>
+                <li>How sentence embeddings are used in RAG</li>
+            </ul>
+            <h2>Vector Embeddings</h2>
+            <p>Vector embeddings map real-world entities such as a word, sentence, or image into vector representations, or a point in some vector space.</p>
+            <p>A key characteristic is that points in vector space that are similar to each other have a similar semantic meaning.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Word Embeddings -->
+    <div class="slide">
+        <div class="slide-title">Word Embeddings</div>
+        <div class="slide-content">
+            <p>Word2Vec was the pioneering work on learning token or word embeddings that maintain semantic meaning.</p>
+            <p>These word embedding vectors behave like vectors in a vector space, allowing algebraic operations:</p>
+            <div class="code-block">
+                queen - woman + man ≈ king
+            </div>
+            <p>Example from Star Wars text:</p>
+            <div class="code-block">
+                Yoda - good + evil ≈ Vader
+            </div>
+            <p>A sentence embedding model applies the same principle to complete sentences, converting a sentence into a vector that represents its semantic meaning.</p>
+        </div>
+    </div>
+
+    <!-- Slide 4: Applications of Vector Embeddings -->
+    <div class="slide">
+        <div class="slide-title">Applications of Vector Embeddings</div>
+        <div class="slide-content">
+            <h2>Key Applications:</h2>
+            <ul>
+                <li><span class="highlight">Building LLMs</span>: Token embeddings are used in transformer models to represent tokens.</li>
+                <li><span class="highlight">Semantic Search</span>: Sentence embeddings power semantic search, also known as vector or neural search and the retrieval engine in a RAG pipeline.</li>
+                <li><span class="highlight">Product Recommendations</span>: Embedding vectors represent products, and recommendations are made based on similarity between those vectors.</li>
+                <li><span class="highlight">Anomaly Detection</span>: Embedding vectors can be used for anomaly detection using typical approaches in the embedding space.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: Retrieval in RAG -->
+    <div class="slide">
+        <div class="slide-title">Retrieval in RAG</div>
+        <div class="slide-content">
+            <p>A critical component of any good RAG pipeline is the retrieval engine.</p>
+            <p>How it works:</p>
+            <ul>
+                <li>Given a user query, rank order all possible facts or text chunks by relevance to the query</li>
+                <li>Send the facts to the LLM for generating a response</li>
+            </ul>
+            <h2>Approaches for Ranking Text Chunks:</h2>
+            <ul>
+                <li><span class="highlight">Cross Encoder</span>: A transformer-based neural network model used as a classifier to determine relevance. However, it's very slow and doesn't scale well.</li>
+                <li><span class="highlight">Sentence Embedding Models</span>: Create an embedding for each text segment during indexing and use similarity search to identify the best matching chunks. Less accurate but much faster.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 6: Contextualized Token Embeddings -->
+    <div class="slide">
+        <div class="slide-title">Contextualized Token Embeddings</div>
+        <div class="slide-content">
+            <p>In this lesson, you will learn:</p>
+            <ul>
+                <li>The importance of contextualized token embeddings</li>
+                <li>How transformer models, specifically BERT, pioneered contextualized embeddings</li>
+                <li>How these are used in sentence embedding models</li>
+            </ul>
+            <h2>Problem with Word Embeddings</h2>
+            <p>Word embedding models like Word2Vec and GloVe don't understand context:</p>
+            <div class="code-block">
+                "The bat flew out of the cave at night."<br>
+                "He swung the bat and hit the home run."
+            </div>
+            <p>Using these models, both instances of "bat" would have the same vector embedding despite different meanings.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Transformer Architecture -->
+    <div class="slide">
+        <div class="slide-title">Transformer Architecture</div>
+        <div class="slide-content">
+            <p>In 2017, the paper "Attention is all you need" introduced the transformer architecture to NLP.</p>
+            <p>The transformer architecture was originally designed for translation tasks and had two components:</p>
+            <ul>
+                <li><span class="highlight">Encoder</span>: Takes a sequence of words/tokens and produces a sequence of continuous representations. Can attend to tokens to the left or right.</li>
+                <li><span class="highlight">Decoder</span>: Operates one token at a time, considering predicted tokens so far along with encoder outputs. Only attends to inputs to the left.</li>
+            </ul>
+            <p>Encoder output vectors are the contextualized vectors we're looking for.</p>
+        </div>
+    </div>
+
+    <!-- Slide 8: BERT Model -->
+    <div class="slide">
+        <div class="slide-title">BERT Model</div>
+        <div class="slide-content">
+            <p>BERT is an encoder-only transformer model heavily used in sentence embedding models.</p>
+            <h2>BERT Specifications:</h2>
+            <ul>
+                <li>BERT Base: 12 transformer layers, 110 million parameters</li>
+                <li>BERT Large: 24 layers, 340 million parameters</li>
+                <li>Pre-trained on 3.3 billion words</li>
+                <li>Often used with additional task-specific fine-tuning</li>
+            </ul>
+            <h2>BERT Pre-training Tasks:</h2>
+            <ul>
+                <li><span class="highlight">Masked Language Modeling (MLM)</span>: 15% of input words are masked, and the model predicts those masked words.</li>
+                <li><span class="highlight">Next Sentence Prediction (NSP)</span>: The model predicts if one sentence is likely to follow another.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 9: Token vs. Sentence Embedding -->
+    <div class="slide">
+        <div class="slide-title">Token vs. Sentence Embedding</div>
+        <div class="slide-content">
+            <p>In this lesson, you will learn:</p>
+            <ul>
+                <li>About sentence embeddings</li>
+                <li>How early and naive attempts to create them failed</li>
+                <li>What led to the successful approach of using a dual encoder architecture</li>
+            </ul>
+            <h2>Tokenization in NLP</h2>
+            <p>NLP systems deal with tokens, which can be:</p>
+            <ul>
+                <li>Whole words</li>
+                <li>Subwords (using techniques like BPE, WordPiece, or SentencePiece)</li>
+                <li>Any sequence of characters</li>
+            </ul>
+            <p>Each sentence is represented by a sequence of integer values corresponding to tokens.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: Token Embeddings in BERT -->
+    <div class="slide">
+        <div class="slide-title">Token Embeddings in BERT</div>
+        <div class="slide-content">
+            <p>BERT has a vocabulary of about 30,000 tokens and an embedding dimension of 768.</p>
+            <h2>How Token Embeddings Work in BERT:</h2>
+            <ul>
+                <li>The tokenizer input sentence is prepended with a special CLS token</li>
+                <li>All tokens are converted to token embeddings (fixed embeddings focusing on the word itself)</li>
+                <li>The output of each encoder layer provides contextualized embeddings that integrate information about the rest of the sentence</li>
+                <li>As we go from layer to layer, these representations become better at integrating context</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 11: Creating Sentence Embeddings -->
+    <div class="slide">
+        <div class="slide-title">Creating Sentence Embeddings</div>
+        <div class="slide-content">
+            <p>After the success of word embeddings, researchers explored creating embedding vectors for sentences.</p>
+            <h2>Initial (Failed) Approaches:</h2>
+            <ul>
+                <li><span class="highlight">Mean Pooling</span>: Taking the output embeddings of the last layer of a transformer model of all tokens in the sentence and averaging them.</li>
+                <li><span class="highlight">CLS Token Embedding</span>: Using just the embeddings of the CLS token as the representative of the sentence.</li>
+            </ul>
+            <p>These approaches failed because they didn't properly capture the semantic meaning of the entire sentence.</p>
+        </div>
+    </div>
+
+    <!-- Slide 12: Dual Encoder Architecture -->
+    <div class="slide">
+        <div class="slide-title">Dual Encoder Architecture</div>
+        <div class="slide-content">
+            <p>Real progress in sentence embeddings came with the introduction of the dual encoder architecture.</p>
+            <h2>Two Possible Goals for Sentence Encoders:</h2>
+            <ul>
+                <li><span class="highlight">Pure Sentence Similarity</span>: Finding similar items using embeddings</li>
+                <li><span class="highlight">Ranking Relevant Sentences</span>: Finding responses to questions (e.g., in RAG)</li>
+            </ul>
+            <p>These are not the same goal. For example, for the question "What is the tallest mountain in the world?", we want the answer "Mount Everest is the tallest" rather than the same question as the answer.</p>
+            <p>The dual encoder architecture has two separate encoders (question encoder and answer encoder) and is trained using a contrastive loss.</p>
+        </div>
+    </div>
+
+    <!-- Slide 13: Training a Dual Encoder -->
+    <div class="slide">
+        <div class="slide-title">Training a Dual Encoder</div>
+        <div class="slide-content">
+            <p>In this lesson, you will learn:</p>
+            <ul>
+                <li>How to build a dual encoder in PyTorch</li>
+                <li>How to train it using a dataset of question and answer pairs</li>
+            </ul>
+            <h2>Dual Encoder Architecture:</h2>
+            <ul>
+                <li>Two independent BERT encoders (one for questions, one for answers)</li>
+                <li>Use the CLS embedding vector from the last layer as the vector embedding</li>
+                <li>Dot product similarity represents semantic match</li>
+                <li>Utilizes a contrastive loss function</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 14: Contrastive Loss -->
+    <div class="slide">
+        <div class="slide-title">Contrastive Loss</div>
+        <div class="slide-content">
+            <p>The idea behind contrastive loss is to ensure that:</p>
+            <ul>
+                <li>Embeddings of similar or positive pairs are closer together in the embedding space</li>
+                <li>Representations of dissimilar or negative pairs are further apart</li>
+            </ul>
+            <p>In our context:</p>
+            <ul>
+                <li>Positive pair: embeddings of a question and its correct answer</li>
+                <li>Negative pair: a question and any other answer considered wrong in the batch</li>
+            </ul>
+            <p>In PyTorch, we use cross-entropy loss with a trick: set the target argument to be zero, one, two, etc., indicating that the correct answer for each question is the one associated with it (the diagonal).</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: Building the Encoder -->
+    <div class="slide">
+        <div class="slide-title">Building the Encoder</div>
+        <div class="slide-content">
+            <h2>Encoder Components:</h2>
+            <ul>
+                <li><span class="highlight">nn.Embedding</span>: Maps tokens to token embeddings</li>
+                <li><span class="highlight">nn.TransformerEncoderLayer</span>: Processes embeddings to create contextualized embeddings</li>
+                <li><span class="highlight">CLS Token</span>: Special token that learns a rough embedding of the whole sentence</li>
+                <li><span class="highlight">Projection Layer</span>: Learns an additional transformation to potentially reduce embedding size</li>
+            </ul>
+            <p>The final output is a contextualized embedding that can be used for similarity comparisons.</p>
+        </div>
+    </div>
+
+    <!-- Slide 16: Training Loop -->
+    <div class="slide">
+        <div class="slide-title">Training Loop</div>
+        <div class="slide-content">
+            <h2>Training Process:</h2>
+            <ul>
+                <li>Define parameters (embedding size, output embedding, max sequence size, batch size)</li>
+                <li>Create question and answer encoders with a tokenizer</li>
+                <li>Load the dataset with a data loader</li>
+                <li>Define an optimizer (Adam) and loss function (cross-entropy)</li>
+                <li>Iterate through the data loader in batches</li>
+                <li>Tokenize questions and answers</li>
+                <li>Compute embeddings using the encoders</li>
+                <li>Calculate similarity scores and contrastive loss</li>
+                <li>Perform backpropagation and optimizer steps</li>
+                <li>Repeat for multiple epochs</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 17: Using Embeddings in RAG -->
+    <div class="slide">
+        <div class="slide-title">Using Embeddings in RAG</div>
+        <div class="slide-content">
+            <p>In this lesson, you will learn:</p>
+            <ul>
+                <li>How to use sentence embedding models in production</li>
+                <li>How question and answer encoders are used in a retrieval pipeline</li>
+            </ul>
+            <h2>RAG Pipeline with Dual Encoder:</h2>
+            <ul>
+                <li><span class="highlight">During Ingest</span>: Encode each text chunk using the answer encoder and store the resulting vector in a vector database</li>
+                <li><span class="highlight">During Query</span>: Use the question encoder to generate the query embedding vector</li>
+                <li><span class="highlight">Retrieval</span>: Use the vector to retrieve matching facts or text segments</li>
+                <li><span class="highlight">Generation</span>: Send retrieved text to the LLM as part of the RAG flow</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 18: Approximate Nearest Neighbors -->
+    <div class="slide">
+        <div class="slide-title">Approximate Nearest Neighbors</div>
+        <div class="slide-content">
+            <p>Finding matching chunks by computing similarity between the question embedding and all answer embeddings is computationally heavy.</p>
+            <p>Instead, we use Approximate Nearest Neighbors (ANN) algorithms:</p>
+            <ul>
+                <li>HNSW (Hierarchical Navigable Small World)</li>
+                <li>Annoy (Approximate Nearest Neighbors Oh Yeah)</li>
+                <li>FAISS (Facebook AI Similarity Search)</li>
+            </ul>
+            <p>These algorithms approximate nearest neighbor searches with high accuracy but significantly lower compute time.</p>
+            <p>For large datasets, implement ANN using a persistent data store on disk.</p>
+        </div>
+    </div>
+
+    <!-- Slide 19: Full RAG Pipeline -->
+    <div class="slide">
+        <div class="slide-title">Full RAG Pipeline</div>
+        <div class="slide-content">
+            <h2>RAG Implementation Options:</h2>
+            <ul>
+                <li><span class="highlight">Code from Scratch</span>: Build the entire pipeline yourself</li>
+                <li><span class="highlight">DIY Frameworks</span>: Use frameworks like LangChain or LlamaIndex</li>
+                <li><span class="highlight">RAG as a Service</span>: Use platforms like Vectara that handle most of the heavy lifting</li>
+            </ul>
+            <h2>Full Pipeline Flow:</h2>
+            <ul>
+                <li><span class="highlight">Ingest (Blue Lines)</span>: Input documents → Chunk → Encode with answer encoder → Store in vector database</li>
+                <li><span class="highlight">Query (Green Lines)</span>: User query → Encode with question encoder → Retrieve with ANN → Include in prompt → Generate with LLM</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 20: Conclusion -->
+    <div class="slide">
+        <div class="slide-title">Conclusion</div>
+        <div class="slide-content">
+            <p>In this course, you learned about:</p>
+            <ul>
+                <li>Token embeddings and sentence embeddings</li>
+                <li>How they are created and trained</li>
+                <li>The importance of specialized models for sentence representation</li>
+                <li>The dual encoder architecture and contrastive loss</li>
+            </ul>
+            <h2>Two-Stage Retrieval Pipeline</h2>
+            <p>A common practical approach is the two-stage retrieval (Retrieve and Rerank):</p>
+            <ul>
+                <li>Use a sentence embedding model to retrieve the top 100 matching documents</li>
+                <li>Use a cross encoder-based reranker to hone in on the top 10 best matches</li>
+                <li>This provides a good trade-off between performance, latency, and accuracy</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 21: Additional Retrieval Techniques -->
+    <div class="slide">
+        <div class="slide-title">Additional Retrieval Techniques</div>
+        <div class="slide-content">
+            <p>While embedding models are essential for RAG, other retrieval techniques can complement neural search:</p>
+            <ul>
+                <li><span class="highlight">Hybrid Search</span>: Combines neural search with traditional keyword-based search</li>
+                <li><span class="highlight">Metadata Filtering</span>: Filter facts by metadata values (e.g., only include facts from papers by a certain author)</li>
+                <li><span class="highlight">Max Marginal Relevance (MMR)</span>: Balances retrieval relevance with diversity of results</li>
+            </ul>
+            <p>These techniques help ensure that the facts getting to the LLM are the most appropriate for responding to the user query.</p>
+            <p>Thank you for joining us to learn about sentence embeddings!</p>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+        <span class="slide-counter">1 / 21</span>
+        <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        <button id="saveBtn"><i class="fas fa-save"></i></button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const slideCounter = document.querySelector('.slide-counter');
+            
+            let currentSlide = 0;
+            
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+                slideCounter.textContent = `${index + 1} / ${slides.length}`;
+            }
+            
+            prevBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(currentSlide);
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            });
+            
+            saveBtn.addEventListener('click', () => {
+                // Create a new HTML document with all slides
+                const allSlidesHTML = Array.from(slides).map(slide => slide.outerHTML).join('');
+                const fullHTML = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Embedding Models: from Architecture to Implementation</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                        <style>
+                            body, html {
+                                margin: 0;
+                                padding: 0;
+                                font-family: 'Roboto', sans-serif;
+                                overflow-x: hidden;
+                            }
+                            .slide {
+                                width: 100vw;
+                                min-height: 100vh;
+                                display: block;
+                                flex-direction: column;
+                                padding: 40px;
+                                box-sizing: border-box;
+                                background-color: #f8f9fa;
+                                color: #333;
+                                page-break-after: always;
+                            }
+                            .slide-title {
+                                font-size: 2.5rem;
+                                font-weight: 700;
+                                margin-bottom: 20px;
+                                color: #1a73e8;
+                            }
+                            .slide-content {
+                                flex-grow: 1;
+                                font-size: 1.2rem;
+                                line-height: 1.6;
+                            }
+                            .slide-content ul {
+                                padding-left: 25px;
+                            }
+                            .slide-content li {
+                                margin-bottom: 10px;
+                            }
+                            .slide-content p {
+                                margin-bottom: 15px;
+                            }
+                            .slide-content h2 {
+                                font-size: 1.8rem;
+                                margin-top: 20px;
+                                margin-bottom: 15px;
+                                color: #1a73e8;
+                            }
+                            .slide-content h3 {
+                                font-size: 1.5rem;
+                                margin-top: 15px;
+                                margin-bottom: 10px;
+                                color: #1a73e8;
+                            }
+                            .code-block {
+                                background-color: #f1f3f4;
+                                border-left: 4px solid #1a73e8;
+                                padding: 15px;
+                                margin: 15px 0;
+                                font-family: 'Courier New', monospace;
+                                font-size: 0.9rem;
+                                overflow-x: auto;
+                                border-radius: 4px;
+                            }
+                            .highlight {
+                                background-color: #fff8e1;
+                                padding: 2px 4px;
+                                border-radius: 3px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${allSlidesHTML}
+                    </body>
+                    </html>
+                `;
+                
+                // Create a blob and download it
+                const blob = new Blob([fullHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'embedding-models-slides.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                } else if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
