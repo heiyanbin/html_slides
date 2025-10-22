@@ -1,15 +1,26 @@
 import os
+import time
 
 def generate_index(path="."):
     """
     Generates an index.html file for the current directory.
-    It lists all non-hidden HTML files, skipping directories and the index files themselves.
+    Lists all non-hidden HTML files (except index.html) in a table
+    sorted by last modified time (newest first).
     """
-    files = os.listdir(path)
-    #files.sort()
+    files = [
+        f for f in os.listdir(path)
+        if (
+            not os.path.isdir(os.path.join(path, f)) and
+            not f.startswith('.') and
+            f.endswith(".html") and
+            f != "index.html"
+        )
+    ]
+
+    # 按修改时间倒序排列
+    files.sort(key=lambda f: os.path.getmtime(os.path.join(path, f)), reverse=True)
 
     with open(os.path.join(path, "index.html"), "w", encoding="utf-8") as f:
-        # HTML header and styles
         f.write('''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,16 +41,21 @@ def generate_index(path="."):
             margin-bottom: 2rem;
             font-weight: normal;
         }
-        ul {
-            list-style: none;
-            padding: 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f8f8;
         }
         a {
             text-decoration: none;
             color: #007bff;
-            display: block;
-            padding: 0.2rem 0;
-            font-size: 1.1rem;
         }
         a:hover {
             text-decoration: underline;
@@ -48,22 +64,23 @@ def generate_index(path="."):
 </head>
 <body>
     <h1>Slides Index</h1>
-    <ul>
+    <table>
+        <thead>
+            <tr><th>Slides</th><th>Last Modified</th></tr>
+        </thead>
+        <tbody>
 ''')
 
         for filename in files:
-            # Skip directories, hidden files, and non-HTML files
-            if (os.path.isdir(os.path.join(path, filename)) or
-                    filename.startswith('.') or
-                    not filename.endswith(".html") or
-                    filename == "index.html"):
-                continue
-
-            # Use the filename without extension as the link text
+            fullpath = os.path.join(path, filename)
+            mod_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(fullpath)))
             link_text = os.path.splitext(filename)[0]
-            f.write(f"        <li><a href='{filename}'>{link_text}</a></li>\n")
+            f.write(f"            <tr><td><a href='{filename}'>{link_text}</a></td><td>{mod_time}</td></tr>\n")
 
-        f.write("    </ul>\n</body>\n</html>")
+        f.write('''        </tbody>
+    </table>
+</body>
+</html>''')
 
 if __name__ == "__main__":
     generate_index(".")
