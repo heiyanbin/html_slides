@@ -6,7 +6,7 @@ def generate_index(path="."):
     It lists all non-hidden HTML files, skipping directories and the index files themselves.
     """
     files = os.listdir(path)
-    files.sort()
+    #files.sort()
 
     with open(os.path.join(path, "index.html"), "w", encoding="utf-8") as f:
         # HTML header and styles
@@ -58,7 +58,7 @@ def generate_index(path="."):
                     not filename.endswith(".html") or
                     filename == "index.html"):
                 continue
-            
+
             # Use the filename without extension as the link text
             link_text = os.path.splitext(filename)[0]
             f.write(f"        <li><a href='{filename}'>{link_text}</a></li>\n")
