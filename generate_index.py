@@ -18,7 +18,7 @@ def generate_index(path="."):
     ]
 
     # 按修改时间倒序排列
-    files.sort(key=lambda f: os.path.getmtime(os.path.join(path, f)), reverse=True)
+    files.sort(key=lambda f: os.path.getctime(os.path.join(path, f)), reverse=True)
 
     with open(os.path.join(path, "index.html"), "w", encoding="utf-8") as f:
         f.write('''<!DOCTYPE html>
@@ -66,14 +66,14 @@ def generate_index(path="."):
     <h1>Slides Index</h1>
     <table>
         <thead>
-            <tr><th>Slides</th><th>Last Modified</th></tr>
+            <tr><th>Slides</th><th>Create Time</th></tr>
         </thead>
         <tbody>
 ''')
 
         for filename in files:
             fullpath = os.path.join(path, filename)
-            mod_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(fullpath)))
+            mod_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getctime(fullpath)))
             link_text = os.path.splitext(filename)[0]
             f.write(f"            <tr><td><a href='{filename}'>{link_text}</a></td><td>{mod_time}</td></tr>\n")
 
